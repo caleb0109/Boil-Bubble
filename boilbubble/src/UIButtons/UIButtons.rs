@@ -74,11 +74,12 @@ impl UIButton {
                 self.action = true;
                 self.hitbox.0 = x - (self.hitbox.2 / 2.0);
                 self.hitbox.1 = y - (self.hitbox.3 / 2.0);
-                text!("{}", self.hitbox.0; x = 0, y = 0);
-                text!("{}", self.hitbox.0; x = 0, y = 0);
                 return (self.hitbox.0, self.hitbox.1);
-            }
-            else {
+            } else if m.pressed() && self.text == "soup" {
+                self.action = true;
+                text!("hi", x = 0, y = 50);
+                return (self.hitbox.0, self.hitbox.1);
+            } else {
                 self.action = false;
                 return (self.hitbox.0, self.hitbox.1);
             } 

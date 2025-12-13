@@ -9,6 +9,8 @@ use turbo::time::tick;
 use track::Track;
 use soup::Soup;
 use crate::UIButtons::UIButtons::UIButton;
+use crate::ingredients::Ingredient;
+use crate::ingredients::IngredientType;
 
 
 #[turbo::game]
@@ -46,6 +48,8 @@ impl GameState {
         let(mx, my) = m.xy();
         let x = mx as f32;
         let y = my as f32;
+        //random checker
+        let mut yPos = 0.0;
         //for every 5/6 of a second that pass, the next item on the track will appear
         //is not perfect for sure, but visually works for now
         //will look into further ways to optimize
@@ -79,6 +83,9 @@ impl GameState {
                 }
             }
 
+            //if ingredient thats being held is hovering over the soup box and the mouse was just released
+            //then it will add the ingredient that was being held to the soup and set the
+            //ingredient on the track to empty/nothing
             if self.trackList.ingredPos1[n].0.hover(self.trackList.ingredPos1[n].0.hitbox, x, y) && 
                self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released(){
                 self.soup.addIngredients(self.trackList.ingredPos1[n].1.clone());
@@ -112,37 +119,58 @@ impl GameState {
 
             
             //if it has a specific name and , then draw rect to see difference
-            if self.trackList.ingredPos1[n].1.name == "Sugar" && !self.trackList.trackPos1[n].2{
-                self.trackList.ingredPos1[n].0.tempDraw();
+            if self.trackList.ingredPos1[n].1.name == "Sugar" || self.trackList.ingredPos1[n].1.name == "Salt" && !self.trackList.trackPos1[n].2{
+                self.trackList.ingredPos1[n].0.tempDraw("Sugar");
             }
-            if self.trackList.ingredPos2[n].1.name == "Sugar" && !self.trackList.trackPos2[n].2{
-                self.trackList.ingredPos2[n].0.tempDraw();
+            if self.trackList.ingredPos2[n].1.name == "Sugar" || self.trackList.ingredPos2[n].1.name == "Salt" && !self.trackList.trackPos2[n].2{
+                self.trackList.ingredPos2[n].0.tempDraw("Sugar");
+            }
+            if self.trackList.ingredPos1[n].1.name == "Peppers" && !self.trackList.trackPos1[n].2{
+                self.trackList.ingredPos1[n].0.tempDraw("Peppers");
             }
             //if the track item reaches the end of the screen, then reset it to start
             if !self.trackList.trackPos1[n].2 {
                 circ!(x = self.trackList.trackPos1[n].0, y = self.trackList.trackPos1[n].1, d=8, color = 0x32CD32ff);
             } else if self.trackList.trackPos1[n].2 {
+                if self.trackList.ingredPos1[n].1.name == "empty" {
+                    self.trackList.ingredPos1[n].1 = self.trackList.ingredientGen();
+                    
+                }
                 self.trackList.trackPos1[n].2 = false;
                 self.trackList.trackPos1[n].0 = 0.0;
             }
             if !self.trackList.trackPos2[n].2 {
                 circ!(x = self.trackList.trackPos2[n].0, y = self.trackList.trackPos2[n].1, d=8, color = 0x32CD32ff);
             } else if self.trackList.trackPos2[n].2 {
+                if self.trackList.ingredPos2[n].1.name == "empty" {
+                    self.trackList.ingredPos2[n].1 = self.trackList.ingredientGen();
+                }
                 self.trackList.trackPos2[n].2 = false;
                 self.trackList.trackPos2[n].0 = 250.0;
             }
+            yPos += 10.0;
+            //text!("ingred: {}", self.trackList.ingredPos1[n].1.name; x = 0, y = yPos);
         }
 
+        let ingredientListTemp = vec![
+                    Ingredient::new(crate::ingredients::IngredientType::Sweet, "Sugar"),
+                    Ingredient::new(crate::ingredients::IngredientType::Spicy, "Peppers"),
+                    Ingredient::new(crate::ingredients::IngredientType::Saltly, "Salt"),
+                    Ingredient::new(crate::ingredients::IngredientType::Sour, "Sugar"),
+                ];
         //check to see if day continue button is pressed or not
         for n in 0..self.uibuttons.len() {
             let dayPress = self.uibuttons[n].check(select);
-                    //if pressed, goes to next day, resets all track positions
+                    //if pressed, goes to next day, resets all track positions, empties soup, and sets soup limit
+                    //resetting will all occur here when going to next day for now
+                    //eventually will have file reader to load in new ingredient lists, customer orders, etc.
             if self.uibuttons[n].action && self.uibuttons[n].text == "NextDay" {
                 self.day += 1;
                 self.uibuttons[0].action = false;
                 self.trackPrint = 0;
                 self.soup.limit = 4;
                 self.soup.soup = Vec::new();
+                self.trackList.dayIngredients(ingredientListTemp.clone());
                 for n in 0..8 {
                     self.trackList.trackPos1[n] = (0.0,100.0,false);
                     self.trackList.trackPos2[n] = (250.0,30.0,false);
@@ -150,17 +178,23 @@ impl GameState {
                     self.trackList.ingredPos1[n].0.hitbox.1 = 100.0;
                     self.trackList.ingredPos2[n].0.hitbox.0 = 250.0;
                     self.trackList.ingredPos2[n].0.hitbox.1 = 30.0;
+
+                    self.trackList.ingredPos1[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
+                    self.trackList.ingredPos2[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
                 }   
             } else if self.uibuttons[n].action && self.uibuttons[n].text == "soupDump" {
                 self.soup.dumpSoup();
                 self.uibuttons[2].action = false;
             }
-            self.uibuttons[n].tempDraw();
+            self.uibuttons[n].tempDraw("ui");
         }
 
         text!("Soup {}", self.soup.soup.len(); x = 0, y = 0);
         text!("Day: {}", self.day; x = 0, y = 10);
-        text!("Soup: {}", self.uibuttons[0].action; x = 0, y = 20);
+         for n in 0..self.soup.soup.len() {
+            text!("Soup: {}", self.soup.soup[n].name; x = 0, y = 20);
+         }
+        
 
     }
 

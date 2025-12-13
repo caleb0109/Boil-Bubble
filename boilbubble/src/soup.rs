@@ -19,7 +19,11 @@ impl Soup {
         }
     }
     pub fn addIngredients(&mut self, ingredient: Ingredient) {
-        if self.soup.len() < self.limit {
+        text!("Adding Ingredient: {}", ingredient.name; x = 0, y = 70, color = 0x22406eff);
+        println!("Adding Ingredient: {}", ingredient.name);
+        if ingredient.name == "empty" {
+            return;
+        } else if self.soup.len() < self.limit {
             self.soup.push(ingredient);
         } else {
             self.soup.remove(0);

@@ -44,7 +44,7 @@ impl UIButton {
         // };
         sprite!(&nonselect, x = self.hitbox.0, y = self.hitbox.1);
     }
-     pub fn tempDraw(&self) {
+     pub fn tempDraw(&self, name: &str) {
         // Color references
         let (c1, c2): (u32, u32) = match self.hovered {
             true => (0x323b42ff, 0xffffffff),
@@ -56,7 +56,12 @@ impl UIButton {
             self.hitbox.1 + (self.hitbox.3/2.0) - 3.0);
 
         // Draw button
-        rect!(x = self.hitbox.0, y = self.hitbox.1, w = self.hitbox.2, h = self.hitbox.3, color = c1);
+        if name == "Peppers" {
+            rect!(x = self.hitbox.0, y = self.hitbox.1, w = self.hitbox.2, h = self.hitbox.3, color = 0x22406eff);
+        } else {
+            rect!(x = self.hitbox.0, y = self.hitbox.1, w = self.hitbox.2, h = self.hitbox.3, color = c1);
+        }
+        
     }
 
     //checks if the mouse is hovering the button or not

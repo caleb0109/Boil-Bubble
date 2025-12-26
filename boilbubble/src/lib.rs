@@ -35,13 +35,20 @@ impl GameState {
 
             uibuttons: [
                 UIButton::new("NextDay", (106.0, 115.0, 40.0, 20.0), false),
-                UIButton::new("soup", (115.0, 70.0, 20.0, 20.0), false),
+                UIButton::new("soup", (145.0, 148.0, 20.0, 20.0), false),
                 UIButton::new("soupDump", (140.0, 75.0, 8.0, 8.0), false),
             ],
             soup: Soup::new(),
         }
     }
     pub fn update(&mut self) {
+        //sprites that cannot be interacted with
+        sprite!("background", x= 0, y = 0);
+        sprite!("cauldron", x = 145, y = 148);
+        
+
+        self.uibuttons[1].draw();
+
         let mut select: (f32,f32) = (0.0,0.0);
         let mut select2: (f32,f32) = (0.0,0.0);
         let m = pointer::world();
@@ -63,11 +70,11 @@ impl GameState {
             //checks if the track item is at the end of the opposite side from start
             if !self.trackList.trackPos1[n].2 {
                 //if the track item has yet to reach the max height and is on starting side
-                if self.trackList.trackPos1[n].0 <= 248.0 && !self.trackList.trackPos1[n].2{
-                    self.trackList.trackPos1[n].0 += 0.625;
+                if self.trackList.trackPos1[n].0 <= 510.0 && !self.trackList.trackPos1[n].2{
+                    self.trackList.trackPos1[n].0 += 1.0;
                 }
                 //if track item reaches end of sceen on opposite side
-                if self.trackList.trackPos1[n].0 >= 248.0 {
+                if self.trackList.trackPos1[n].0 >= 510.0 {
                     self.trackList.trackPos1[n].2 = true;
                 }
             }
@@ -82,6 +89,7 @@ impl GameState {
                     self.trackList.trackPos2[n].2 = true;
                 }
             }
+
 
             //if ingredient thats being held is hovering over the soup box and the mouse was just released
             //then it will add the ingredient that was being held to the soup and set the
@@ -130,7 +138,8 @@ impl GameState {
             }
             //if the track item reaches the end of the screen, then reset it to start
             if !self.trackList.trackPos1[n].2 {
-                circ!(x = self.trackList.trackPos1[n].0, y = self.trackList.trackPos1[n].1, d=8, color = 0x32CD32ff);
+                sprite!("bowl", x = self.trackList.trackPos1[n].0, y = self.trackList.trackPos1[n].1);
+                //circ!(x = self.trackList.trackPos1[n].0, y = self.trackList.trackPos1[n].1, d=8, color = 0x32CD32ff);
             } else if self.trackList.trackPos1[n].2 {
                 if self.trackList.ingredPos1[n].1.name == "empty" {
                     self.trackList.ingredPos1[n].1 = self.trackList.ingredientGen();
@@ -140,13 +149,14 @@ impl GameState {
                 self.trackList.trackPos1[n].0 = 0.0;
             }
             if !self.trackList.trackPos2[n].2 {
-                circ!(x = self.trackList.trackPos2[n].0, y = self.trackList.trackPos2[n].1, d=8, color = 0x32CD32ff);
+                sprite!("bowl", x = self.trackList.trackPos2[n].0, y = self.trackList.trackPos2[n].1);
+                //circ!(x = self.trackList.trackPos2[n].0, y = self.trackList.trackPos2[n].1, d=8, color = 0x32CD32ff);
             } else if self.trackList.trackPos2[n].2 {
                 if self.trackList.ingredPos2[n].1.name == "empty" {
                     self.trackList.ingredPos2[n].1 = self.trackList.ingredientGen();
                 }
                 self.trackList.trackPos2[n].2 = false;
-                self.trackList.trackPos2[n].0 = 250.0;
+                self.trackList.trackPos2[n].0 = 510.0;
             }
             yPos += 10.0;
             //text!("ingred: {}", self.trackList.ingredPos1[n].1.name; x = 0, y = yPos);
@@ -172,12 +182,12 @@ impl GameState {
                 self.soup.soup = Vec::new();
                 self.trackList.dayIngredients(ingredientListTemp.clone());
                 for n in 0..8 {
-                    self.trackList.trackPos1[n] = (0.0,100.0,false);
-                    self.trackList.trackPos2[n] = (250.0,30.0,false);
+                    self.trackList.trackPos1[n] = (0.0,206.0,false);
+                    self.trackList.trackPos2[n] = (510.0,44.0,false);
                     self.trackList.ingredPos1[n].0.hitbox.0 = 0.0;
-                    self.trackList.ingredPos1[n].0.hitbox.1 = 100.0;
-                    self.trackList.ingredPos2[n].0.hitbox.0 = 250.0;
-                    self.trackList.ingredPos2[n].0.hitbox.1 = 30.0;
+                    self.trackList.ingredPos1[n].0.hitbox.1 = 206.0;
+                    self.trackList.ingredPos2[n].0.hitbox.0 = 510.0;
+                    self.trackList.ingredPos2[n].0.hitbox.1 = 44.0;
 
                     self.trackList.ingredPos1[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
                     self.trackList.ingredPos2[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
@@ -189,10 +199,15 @@ impl GameState {
             self.uibuttons[n].tempDraw("ui");
         }
 
-        text!("Soup {}", self.soup.soup.len(); x = 0, y = 0);
-        text!("Day: {}", self.day; x = 0, y = 10);
+        sprite!("cat", x = 181, y =65);
+        
+        //UI
+        sprite!("borders", x = 0, y = 0);
+
+        text!("Soup {}", self.soup.soup.len(); font = "TENPIXELS", x = 0, y = 8);
+        text!("Day: {}", self.day; font = "TENPIXELS", x = 60, y = 8);
          for n in 0..self.soup.soup.len() {
-            text!("Soup: {}", self.soup.soup[n].name; x = 0, y = 20);
+            text!("Soup: {}", self.soup.soup[n].name; x = 0, y = 8);
          }
         
 

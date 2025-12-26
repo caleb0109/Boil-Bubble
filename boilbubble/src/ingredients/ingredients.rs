@@ -1,6 +1,7 @@
 use turbo::*;
 
 #[turbo::serialize]
+#[derive(PartialEq, Copy)]
 //enum to define different ingredient types
 pub enum IngredientType {
     Sweet,

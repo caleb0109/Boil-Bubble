@@ -18,7 +18,7 @@ struct GameState {
     day: i32,
     timestamp: usize,
     timepass: usize,
-    trackList: Track,
+    tList: Track,
     trackPrint: usize,
     uibuttons: [UIButton; 3],
     soup: Soup,
@@ -30,7 +30,7 @@ impl GameState {
             day:0,
             timestamp: time::tick(),
             timepass: 0,
-            trackList: Track::new(),
+            tList: Track::new(),
             trackPrint: 0,
 
             uibuttons: [
@@ -58,95 +58,95 @@ impl GameState {
         }
         //for loop to create the track
         for n in 0..self.trackPrint {
-            select = self.trackList.ingredPos1[n].0.check(select);
-            select2 = self.trackList.ingredPos2[n].0.check(select2);
+            select = self.tList.ingredPos1[n].0.check(select);
+            select2 = self.tList.ingredPos2[n].0.check(select2);
             //checks if the track item is at the end of the opposite side from start
-            if !self.trackList.trackPos1[n].2 {
+            if !self.tList.trackPos1[n].2 {
                 //if the track item has yet to reach the max height and is on starting side
-                if self.trackList.trackPos1[n].0 <= 248.0 && !self.trackList.trackPos1[n].2{
-                    self.trackList.trackPos1[n].0 += 0.625;
+                if self.tList.trackPos1[n].0 <= 248.0 && !self.tList.trackPos1[n].2{
+                    self.tList.trackPos1[n].0 += 0.625;
                 }
                 //if track item reaches end of sceen on opposite side
-                if self.trackList.trackPos1[n].0 >= 248.0 {
-                    self.trackList.trackPos1[n].2 = true;
+                if self.tList.trackPos1[n].0 >= 248.0 {
+                    self.tList.trackPos1[n].2 = true;
                 }
             }
             //checks if the track item is on the way back to starting side
-            if !self.trackList.trackPos2[n].2{
+            if !self.tList.trackPos2[n].2{
                 //if the track item reaches min height and is on starting side
-                if self.trackList.trackPos2[n].0 >= 0.0 && !self.trackList.trackPos1[n].2{
-                    self.trackList.trackPos2[n].0 -= 0.625;
+                if self.tList.trackPos2[n].0 >= 0.0 && !self.tList.trackPos1[n].2{
+                    self.tList.trackPos2[n].0 -= 0.625;
                 }
                 //if track item reached min height, now descending and making sure it doesn't go above starting height
-                if self.trackList.trackPos2[n].0 <= 2.5{
-                    self.trackList.trackPos2[n].2 = true;
+                if self.tList.trackPos2[n].0 <= 2.5{
+                    self.tList.trackPos2[n].2 = true;
                 }
             }
 
             //if ingredient thats being held is hovering over the soup box and the mouse was just released
             //then it will add the ingredient that was being held to the soup and set the
             //ingredient on the track to empty/nothing
-            if self.trackList.ingredPos1[n].0.hover(self.trackList.ingredPos1[n].0.hitbox, x, y) && 
+            if self.tList.ingredPos1[n].0.hover(self.tList.ingredPos1[n].0.hitbox, x, y) && 
                self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released(){
-                self.soup.addIngredients(self.trackList.ingredPos1[n].1.clone());
+                self.soup.addIngredients(self.tList.ingredPos1[n].1.clone());
                 //self.trackList.ingredPos2[n].1.ingredType = crate::ingredients::IngredientType::Empty;
-                self.trackList.ingredPos1[n].1.name = "empty".to_string();
-                self.trackList.ingredPos1[n].0.action = false;
+                self.tList.ingredPos1[n].1.name = "empty".to_string();
+                self.tList.ingredPos1[n].0.action = false;
                 
-            } else if self.trackList.ingredPos2[n].0.hover(self.trackList.ingredPos2[n].0.hitbox, x, y) && 
+            } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && 
                self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released(){
-                self.soup.addIngredients(self.trackList.ingredPos2[n].1.clone());
+                self.soup.addIngredients(self.tList.ingredPos2[n].1.clone());
                 //self.trackList.ingredPos2[n].1.ingredType = crate::ingredients::IngredientType::Empty;
-                self.trackList.ingredPos2[n].1.name = "empty".to_string();
-                self.trackList.ingredPos2[n].0.action = false;
+                self.tList.ingredPos2[n].1.name = "empty".to_string();
+                self.tList.ingredPos2[n].0.action = false;
             }
             //if the ingredient isn't being held, then set its position to the track position
-            if !self.trackList.ingredPos1[n].0.action {
-                self.trackList.ingredPos1[n].0.hitbox.0 = self.trackList.trackPos1[n].0;
-                self.trackList.ingredPos1[n].0.hitbox.1 = self.trackList.trackPos1[n].1;
+            if !self.tList.ingredPos1[n].0.action {
+                self.tList.ingredPos1[n].0.hitbox.0 = self.tList.trackPos1[n].0;
+                self.tList.ingredPos1[n].0.hitbox.1 = self.tList.trackPos1[n].1;
             }
-            if !self.trackList.ingredPos2[n].0.action {
-                self.trackList.ingredPos2[n].0.hitbox.0 = self.trackList.trackPos2[n].0;
-                self.trackList.ingredPos2[n].0.hitbox.1 = self.trackList.trackPos2[n].1;
+            if !self.tList.ingredPos2[n].0.action {
+                self.tList.ingredPos2[n].0.hitbox.0 = self.tList.trackPos2[n].0;
+                self.tList.ingredPos2[n].0.hitbox.1 = self.tList.trackPos2[n].1;
             }
             //if the pointer releases the ingredient, ingredient is not active
             
             
             if m.just_released() {
-                self.trackList.ingredPos1[n].0.action = false;
-                self.trackList.ingredPos2[n].0.action = false;
+                self.tList.ingredPos1[n].0.action = false;
+                self.tList.ingredPos2[n].0.action = false;
             }
 
             
             //if it has a specific name and , then draw rect to see difference
-            if self.trackList.ingredPos1[n].1.name == "Sugar" || self.trackList.ingredPos1[n].1.name == "Salt" && !self.trackList.trackPos1[n].2{
-                self.trackList.ingredPos1[n].0.tempDraw("Sugar");
+            if self.tList.ingredPos1[n].1.name == "Sugar" || self.tList.ingredPos1[n].1.name == "Salt" && !self.tList.trackPos1[n].2{
+                self.tList.ingredPos1[n].0.tempDraw("Sugar");
             }
-            if self.trackList.ingredPos2[n].1.name == "Sugar" || self.trackList.ingredPos2[n].1.name == "Salt" && !self.trackList.trackPos2[n].2{
-                self.trackList.ingredPos2[n].0.tempDraw("Sugar");
+            if self.tList.ingredPos2[n].1.name == "Sugar" || self.tList.ingredPos2[n].1.name == "Salt" && !self.tList.trackPos2[n].2{
+                self.tList.ingredPos2[n].0.tempDraw("Sugar");
             }
-            if self.trackList.ingredPos1[n].1.name == "Peppers" && !self.trackList.trackPos1[n].2{
-                self.trackList.ingredPos1[n].0.tempDraw("Peppers");
+            if self.tList.ingredPos1[n].1.name == "Peppers" && !self.tList.trackPos1[n].2{
+                self.tList.ingredPos1[n].0.tempDraw("Peppers");
             }
             //if the track item reaches the end of the screen, then reset it to start
-            if !self.trackList.trackPos1[n].2 {
-                circ!(x = self.trackList.trackPos1[n].0, y = self.trackList.trackPos1[n].1, d=8, color = 0x32CD32ff);
-            } else if self.trackList.trackPos1[n].2 {
-                if self.trackList.ingredPos1[n].1.name == "empty" {
-                    self.trackList.ingredPos1[n].1 = self.trackList.ingredientGen();
+            if !self.tList.trackPos1[n].2 {
+                circ!(x = self.tList.trackPos1[n].0, y = self.tList.trackPos1[n].1, d=8, color = 0x32CD32ff);
+            } else if self.tList.trackPos1[n].2 {
+                if self.tList.ingredPos1[n].1.name == "empty" {
+                    self.tList.ingredPos1[n].1 = self.tList.ingredientGen();
                     
                 }
-                self.trackList.trackPos1[n].2 = false;
-                self.trackList.trackPos1[n].0 = 0.0;
+                self.tList.trackPos1[n].2 = false;
+                self.tList.trackPos1[n].0 = 0.0;
             }
-            if !self.trackList.trackPos2[n].2 {
-                circ!(x = self.trackList.trackPos2[n].0, y = self.trackList.trackPos2[n].1, d=8, color = 0x32CD32ff);
-            } else if self.trackList.trackPos2[n].2 {
-                if self.trackList.ingredPos2[n].1.name == "empty" {
-                    self.trackList.ingredPos2[n].1 = self.trackList.ingredientGen();
+            if !self.tList.trackPos2[n].2 {
+                circ!(x = self.tList.trackPos2[n].0, y = self.tList.trackPos2[n].1, d=8, color = 0x32CD32ff);
+            } else if self.tList.trackPos2[n].2 {
+                if self.tList.ingredPos2[n].1.name == "empty" {
+                    self.tList.ingredPos2[n].1 = self.tList.ingredientGen();
                 }
-                self.trackList.trackPos2[n].2 = false;
-                self.trackList.trackPos2[n].0 = 250.0;
+                self.tList.trackPos2[n].2 = false;
+                self.tList.trackPos2[n].0 = 250.0;
             }
             yPos += 10.0;
             //text!("ingred: {}", self.trackList.ingredPos1[n].1.name; x = 0, y = yPos);
@@ -170,17 +170,17 @@ impl GameState {
                 self.trackPrint = 0;
                 self.soup.limit = 4;
                 self.soup.soup = Vec::new();
-                self.trackList.dayIngredients(ingredientListTemp.clone());
+                self.tList.dayIngredients(ingredientListTemp.clone());
                 for n in 0..8 {
-                    self.trackList.trackPos1[n] = (0.0,100.0,false);
-                    self.trackList.trackPos2[n] = (250.0,30.0,false);
-                    self.trackList.ingredPos1[n].0.hitbox.0 = 0.0;
-                    self.trackList.ingredPos1[n].0.hitbox.1 = 100.0;
-                    self.trackList.ingredPos2[n].0.hitbox.0 = 250.0;
-                    self.trackList.ingredPos2[n].0.hitbox.1 = 30.0;
+                    self.tList.trackPos1[n] = (0.0,100.0,false);
+                    self.tList.trackPos2[n] = (250.0,30.0,false);
+                    self.tList.ingredPos1[n].0.hitbox.0 = 0.0;
+                    self.tList.ingredPos1[n].0.hitbox.1 = 100.0;
+                    self.tList.ingredPos2[n].0.hitbox.0 = 250.0;
+                    self.tList.ingredPos2[n].0.hitbox.1 = 30.0;
 
-                    self.trackList.ingredPos1[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
-                    self.trackList.ingredPos2[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
+                    self.tList.ingredPos1[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
+                    self.tList.ingredPos2[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
                 }   
             } else if self.uibuttons[n].action && self.uibuttons[n].text == "soupDump" {
                 self.soup.dumpSoup();

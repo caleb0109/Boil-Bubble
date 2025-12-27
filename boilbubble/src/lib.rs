@@ -1,8 +1,9 @@
-mod customer;
 mod ingredients;
 mod track;
 mod UIButtons;
 mod soup;
+mod reader;
+mod customer;
 
 use turbo::*;
 use turbo::time::tick;
@@ -34,8 +35,8 @@ impl GameState {
             trackPrint: 0,
 
             uibuttons: [
-                UIButton::new("NextDay", (106.0, 115.0, 40.0, 20.0), false),
-                UIButton::new("soup", (145.0, 148.0, 20.0, 20.0), false),
+                UIButton::new("NextDay", (235.0, 240.0, 40.0, 20.0), false),
+                UIButton::new("soup", (145.0, 148.0, 210.0, 50.0), false),
                 UIButton::new("soupDump", (140.0, 75.0, 8.0, 8.0), false),
             ],
             soup: Soup::new(),
@@ -60,7 +61,7 @@ impl GameState {
         //for every 5/6 of a second that pass, the next item on the track will appear
         //is not perfect for sure, but visually works for now
         //will look into further ways to optimize
-        if time::tick() % 50 == 0 && self.trackPrint <= 7 && self.day > 0{
+        if time::tick() % 64 == 0 && self.trackPrint <= 7 && self.day > 0{
             self.trackPrint += 1;
         }
         //for loop to create the track
@@ -82,7 +83,7 @@ impl GameState {
             if !self.tList.trackPos2[n].2{
                 //if the track item reaches min height and is on starting side
                 if self.tList.trackPos2[n].0 >= 0.0 && !self.tList.trackPos1[n].2{
-                    self.tList.trackPos2[n].0 -= 0.625;
+                    self.tList.trackPos2[n].0 -= 1.0;
                 }
                 //if track item reached min height, now descending and making sure it doesn't go above starting height
                 if self.tList.trackPos2[n].0 <= 2.5{
@@ -196,7 +197,12 @@ impl GameState {
                 self.soup.dumpSoup();
                 self.uibuttons[2].action = false;
             }
-            self.uibuttons[n].tempDraw("ui");
+            if n == 1{
+                continue;
+            } else {
+                self.uibuttons[n].tempDraw("ui");
+            }
+            
         }
 
         sprite!("cat", x = 181, y =65);
@@ -206,8 +212,10 @@ impl GameState {
 
         text!("Soup {}", self.soup.soup.len(); font = "TENPIXELS", x = 0, y = 8);
         text!("Day: {}", self.day; font = "TENPIXELS", x = 60, y = 8);
+        let mut offset = 100;
          for n in 0..self.soup.soup.len() {
-            text!("Soup: {}", self.soup.soup[n].name; x = 0, y = 8);
+            offset += 40;
+            text!("{}", self.soup.soup[n].name; x = offset, y = 8);
          }
         
 

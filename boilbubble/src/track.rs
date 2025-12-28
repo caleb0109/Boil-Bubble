@@ -1,5 +1,5 @@
 use turbo::*;
-use crate::ingredients::{self, ingredients::Ingredient};
+use crate::ingredients::ingredients::Ingredient;
 use crate::ingredients::IngredientType;
 use crate::UIButtons::UIButtons::UIButton;
 
@@ -43,40 +43,40 @@ impl Track {
             //x Position, y Position, ingredient on the track
             ingredPos1: [
                 (UIButton::new("ing", (0.0,206.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new( "empty")),
                 (UIButton::new("ing", (0.0,206.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "Sugar")),
+                Ingredient::new("Sugar")),
                 (UIButton::new("ing", (0.0,206.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (0.0,206.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (0.0,206.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (0.0,206.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (0.0,206.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "Sugar")),
+                Ingredient::new("Sugar")),
                 (UIButton::new("ing", (0.0,206.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "Sugar")),
+                Ingredient::new("Sugar")),
             ],
             //lower track
             ingredPos2: [
                 (UIButton::new("ing", (510.0,44.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (510.0,44.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (510.0,44.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (510.0,44.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "Sugar")),
+                Ingredient::new("Sugar")),
                 (UIButton::new("ing", (510.0,44.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (510.0,44.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (510.0,44.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "empty")),
+                Ingredient::new("empty")),
                 (UIButton::new("ing", (510.0,44.0,10.0,10.0), false), 
-                Ingredient::new(IngredientType::Sweet, "Sugar")),
+                Ingredient::new("Sugar")),
             ],
             ingredList: Vec::new(),
         }
@@ -88,7 +88,7 @@ impl Track {
 
     pub fn ingredientGen(&self) -> Ingredient{
         if self.ingredList.is_empty() {
-            return Ingredient::new(IngredientType::Sweet, "empty");
+            return Ingredient::new("empty");
         }
         //text!("gen", x = 0, y = 60);
         let num: u32 = random::between(0,self.ingredList.len() as u32 -1);
@@ -98,7 +98,7 @@ impl Track {
 
         match random::between(0,2) {
             0 => {return self.ingredList[choice].clone()}
-            _ => {return Ingredient::new(IngredientType::Sweet, "empty")}
+            _ => {return Ingredient::new("empty")}
         }
         
     }

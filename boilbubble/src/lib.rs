@@ -12,6 +12,7 @@ use soup::Soup;
 use crate::UIButtons::UIButtons::UIButton;
 use crate::ingredients::Ingredient;
 use crate::ingredients::IngredientType;
+use crate::customer::Customer;
 
 
 #[turbo::game]
@@ -23,6 +24,7 @@ struct GameState {
     trackPrint: usize,
     uibuttons: [UIButton; 3],
     soup: Soup,
+    reader: reader::Reader,
 }
 impl GameState {
     pub fn new() -> Self {
@@ -40,6 +42,7 @@ impl GameState {
                 UIButton::new("soupDump", (140.0, 75.0, 8.0, 8.0), false),
             ],
             soup: Soup::new(),
+            reader: reader::Reader::new(),
         }
     }
     pub fn update(&mut self) {
@@ -164,10 +167,10 @@ impl GameState {
         }
 
         let ingredientListTemp = vec![
-                    Ingredient::new(crate::ingredients::IngredientType::Sweet, "Sugar"),
-                    Ingredient::new(crate::ingredients::IngredientType::Spicy, "Peppers"),
-                    Ingredient::new(crate::ingredients::IngredientType::Saltly, "Salt"),
-                    Ingredient::new(crate::ingredients::IngredientType::Sour, "Sugar"),
+                    Ingredient::new( "Sugar"),
+                    Ingredient::new( "Peppers"),
+                    Ingredient::new("Salt"),
+                    Ingredient::new("Sugar"),
                 ];
         //check to see if day continue button is pressed or not
         for n in 0..self.uibuttons.len() {
@@ -177,11 +180,12 @@ impl GameState {
                     //eventually will have file reader to load in new ingredient lists, customer orders, etc.
             if self.uibuttons[n].action && self.uibuttons[n].text == "NextDay" {
                 self.day += 1;
+                self.reader.customersDay(self.day);
                 self.uibuttons[0].action = false;
                 self.trackPrint = 0;
                 self.soup.limit = 4;
                 self.soup.soup = Vec::new();
-                self.tList.dayIngredients(ingredientListTemp.clone());
+                self.tList.dayIngredients(self.reader.ingredList.clone());
                 for n in 0..8 {
                     self.tList.trackPos1[n] = (0.0,206.0,false);
                     self.tList.trackPos2[n] = (510.0,44.0,false);
@@ -190,8 +194,8 @@ impl GameState {
                     self.tList.ingredPos2[n].0.hitbox.0 = 510.0;
                     self.tList.ingredPos2[n].0.hitbox.1 = 44.0;
 
-                    self.tList.ingredPos1[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
-                    self.tList.ingredPos2[n].1 = Ingredient::new(IngredientType::Sweet, "empty");
+                    self.tList.ingredPos1[n].1 = Ingredient::new( "empty");
+                    self.tList.ingredPos2[n].1 = Ingredient::new("empty");
                 }   
             } else if self.uibuttons[n].action && self.uibuttons[n].text == "soupDump" {
                 self.soup.dumpSoup();
@@ -205,6 +209,8 @@ impl GameState {
             
         }
 
+        
+        
         sprite!("cat", x = 181, y =65);
         
         //UI
@@ -212,6 +218,9 @@ impl GameState {
 
         text!("Soup {}", self.soup.soup.len(); font = "TENPIXELS", x = 0, y = 8);
         text!("Day: {}", self.day; font = "TENPIXELS", x = 60, y = 8);
+        if self.day > 0 {
+            text!("Customer: {}", self.reader.customers[1].cusName; font = "TENPIXELS", x = 0, y = 270);
+        }
         let mut offset = 100;
          for n in 0..self.soup.soup.len() {
             offset += 40;

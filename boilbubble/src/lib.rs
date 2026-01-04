@@ -49,7 +49,10 @@ impl GameState {
         //sprites that cannot be interacted with
         sprite!("background", x= 0, y = 0);
         sprite!("cauldron", x = 145, y = 148);
+        sprite!("bowls_lowertrack", x = 0, y = 0);
+        sprite!("bowls_uppertrack", x = 0, y = 0);
         
+        sprite!("list", x = 4, y = 88);
 
         self.uibuttons[1].draw();
 
@@ -130,19 +133,9 @@ impl GameState {
             }
 
             
-            //if it has a specific name and , then draw rect to see difference
-            if self.tList.ingredPos1[n].1.name == "Sugar" || self.tList.ingredPos1[n].1.name == "Salt" && !self.tList.trackPos1[n].2{
-                self.tList.ingredPos1[n].0.tempDraw("Sugar");
-            }
-            if self.tList.ingredPos2[n].1.name == "Sugar" || self.tList.ingredPos2[n].1.name == "Salt" && !self.tList.trackPos2[n].2{
-                self.tList.ingredPos2[n].0.tempDraw("Sugar");
-            }
-            if self.tList.ingredPos1[n].1.name == "Peppers" && !self.tList.trackPos1[n].2{
-                self.tList.ingredPos1[n].0.tempDraw("Peppers");
-            }
-            //if the track item reaches the end of the screen, then reset it to start
             if !self.tList.trackPos1[n].2 {
                 sprite!("bowl", x = self.tList.trackPos1[n].0, y = self.tList.trackPos1[n].1);
+                sprite!(&self.tList.ingredPos1[n].1.name, x = self.tList.trackPos1[n].0, y = self.tList.trackPos1[n].1 - 11.0);
                 //circ!(x = self.tList.trackPos1[n].0, y = self.tList.trackPos1[n].1, d=8, color = 0x32CD32ff);
             } else if self.tList.trackPos1[n].2 {
                 if self.tList.ingredPos1[n].1.name == "empty" {
@@ -154,6 +147,7 @@ impl GameState {
             }
             if !self.tList.trackPos2[n].2 {
                 sprite!("bowl", x = self.tList.trackPos2[n].0, y = self.tList.trackPos2[n].1);
+                sprite!(&self.tList.ingredPos2[n].1.name, x = self.tList.trackPos2[n].0, y = self.tList.trackPos2[n].1 - 11.0);
                 //circ!(x = self.tList.trackPos2[n].0, y = self.tList.trackPos2[n].1, d=8, color = 0x32CD32ff);
             } else if self.tList.trackPos2[n].2 {
                 if self.tList.ingredPos2[n].1.name == "empty" {
@@ -166,12 +160,12 @@ impl GameState {
             //text!("ingred: {}", self.tList.ingredPos1[n].1.name; x = 0, y = yPos);
         }
 
-        let ingredientListTemp = vec![
-                    Ingredient::new( "Sugar"),
-                    Ingredient::new( "Peppers"),
-                    Ingredient::new("Salt"),
-                    Ingredient::new("Sugar"),
-                ];
+        // let ingredientListTemp = vec![
+        //             Ingredient::new( "sugar"),
+        //             Ingredient::new( "peppers"),
+        //             Ingredient::new("salt"),
+        //             Ingredient::new("sugar"),
+        //         ];
         //check to see if day continue button is pressed or not
         for n in 0..self.uibuttons.len() {
             let dayPress = self.uibuttons[n].check(select);
@@ -194,8 +188,8 @@ impl GameState {
                     self.tList.ingredPos2[n].0.hitbox.0 = 510.0;
                     self.tList.ingredPos2[n].0.hitbox.1 = 44.0;
 
-                    self.tList.ingredPos1[n].1 = Ingredient::new( "empty");
-                    self.tList.ingredPos2[n].1 = Ingredient::new("empty");
+                    //self.tList.ingredPos1[n].1 = Ingredient::new( "empty");
+                    //self.tList.ingredPos2[n].1 = Ingredient::new("empty");
                 }   
             } else if self.uibuttons[n].action && self.uibuttons[n].text == "soupDump" {
                 self.soup.dumpSoup();
@@ -215,6 +209,7 @@ impl GameState {
         
         //UI
         sprite!("borders", x = 0, y = 0);
+        sprite!("customer_speech", x = 59, y = 266);
 
         text!("Soup {}", self.soup.soup.len(); font = "TENPIXELS", x = 0, y = 8);
         text!("Day: {}", self.day; font = "TENPIXELS", x = 60, y = 8);

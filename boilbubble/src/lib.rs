@@ -25,6 +25,8 @@ struct GameState {
     uibuttons: [UIButton; 3],
     soup: Soup,
     reader: reader::Reader,
+    currCus: usize,
+    cusCheck: bool,
 }
 impl GameState {
     pub fn new() -> Self {
@@ -43,6 +45,8 @@ impl GameState {
             ],
             soup: Soup::new(),
             reader: reader::Reader::new(),
+            currCus: 0,
+            cusCheck: false,
         }
     }
     pub fn update(&mut self) {
@@ -131,15 +135,9 @@ impl GameState {
 
             
             //if it has a specific name and , then draw rect to see difference
-            if self.tList.ingredPos1[n].1.name == "Sugar" || self.tList.ingredPos1[n].1.name == "Salt" && !self.tList.trackPos1[n].2{
-                self.tList.ingredPos1[n].0.tempDraw("Sugar");
-            }
-            if self.tList.ingredPos2[n].1.name == "Sugar" || self.tList.ingredPos2[n].1.name == "Salt" && !self.tList.trackPos2[n].2{
-                self.tList.ingredPos2[n].0.tempDraw("Sugar");
-            }
-            if self.tList.ingredPos1[n].1.name == "Peppers" && !self.tList.trackPos1[n].2{
-                self.tList.ingredPos1[n].0.tempDraw("Peppers");
-            }
+
+            self.tList.ingredPos1[n].0.tempDraw(self.tList.ingredPos1[n].1.name.as_str());
+            self.tList.ingredPos2[n].0.tempDraw(self.tList.ingredPos2[n].1.name.as_str());
             //if the track item reaches the end of the screen, then reset it to start
             if !self.tList.trackPos1[n].2 {
                 sprite!("bowl", x = self.tList.trackPos1[n].0, y = self.tList.trackPos1[n].1);
@@ -166,40 +164,45 @@ impl GameState {
             //text!("ingred: {}", self.tList.ingredPos1[n].1.name; x = 0, y = yPos);
         }
 
-        let ingredientListTemp = vec![
-                    Ingredient::new( "Sugar"),
-                    Ingredient::new( "Peppers"),
-                    Ingredient::new("Salt"),
-                    Ingredient::new("Sugar"),
-                ];
         //check to see if day continue button is pressed or not
         for n in 0..self.uibuttons.len() {
             let dayPress = self.uibuttons[n].check(select);
                     //if pressed, goes to next day, resets all track positions, empties soup, and sets soup limit
                     //resetting will all occur here when going to next day for now
                     //eventually will have file reader to load in new ingredient lists, customer orders, etc.
-            if self.uibuttons[n].action && self.uibuttons[n].text == "NextDay" {
-                self.day += 1;
-                self.reader.customersDay(self.day);
-                self.uibuttons[0].action = false;
-                self.trackPrint = 0;
-                self.soup.limit = 4;
-                self.soup.soup = Vec::new();
-                self.tList.dayIngredients(self.reader.ingredList.clone());
-                for n in 0..8 {
-                    self.tList.trackPos1[n] = (0.0,206.0,false);
-                    self.tList.trackPos2[n] = (510.0,44.0,false);
-                    self.tList.ingredPos1[n].0.hitbox.0 = 0.0;
-                    self.tList.ingredPos1[n].0.hitbox.1 = 206.0;
-                    self.tList.ingredPos2[n].0.hitbox.0 = 510.0;
-                    self.tList.ingredPos2[n].0.hitbox.1 = 44.0;
+            if self.uibuttons[n].action {
 
-                    self.tList.ingredPos1[n].1 = Ingredient::new( "empty");
-                    self.tList.ingredPos2[n].1 = Ingredient::new("empty");
+                match n {
+                    0 => {
+                        self.day += 1;
+                        self.reader.customersDay(self.day);
+                        self.uibuttons[0].action = false;
+                        self.trackPrint = 0;
+                        self.currCus = 0;
+                        self.cusCheck = false;
+                        self.soup.limit = self.reader.customers[0].order.len();
+                        self.soup.soup = Vec::new();
+                        self.tList.dayIngredients(self.reader.ingredList.clone());
+                        for n in 0..8 {
+                            self.tList.trackPos1[n] = (0.0,206.0,false);
+                            self.tList.trackPos2[n] = (510.0,44.0,false);
+                            self.tList.ingredPos1[n].0.hitbox.0 = 0.0;
+                            self.tList.ingredPos1[n].0.hitbox.1 = 206.0;
+                            self.tList.ingredPos2[n].0.hitbox.0 = 510.0;
+                            self.tList.ingredPos2[n].0.hitbox.1 = 44.0;
+
+                            self.tList.ingredPos1[n].1 = Ingredient::new( "empty");
+                            self.tList.ingredPos2[n].1 = Ingredient::new("empty");
+                        }
+                    }
+                    1 => {continue;}
+                    2 => {
+                        self.soup.dumpSoup();
+                        self.uibuttons[2].action = false;
+                    }
+                    _ => {}
+                
                 }   
-            } else if self.uibuttons[n].action && self.uibuttons[n].text == "soupDump" {
-                self.soup.dumpSoup();
-                self.uibuttons[2].action = false;
             }
             if n == 1{
                 continue;
@@ -207,6 +210,17 @@ impl GameState {
                 self.uibuttons[n].tempDraw("ui");
             }
             
+        }
+
+        if self.soup.soup.len() == self.soup.limit && self.soup.limit != 0 && self.reader.customers[self.currCus].soupCheck(self.soup.soup.as_ref()) && !self.cusCheck{
+            self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
+            self.currCus += 1;
+            self.soup.soup = Vec::new();
+            if self.currCus != self.reader.custNum {
+                self.soup.limit = self.reader.customers[self.currCus].order.len();
+            } else {
+                self.cusCheck = true;
+            }
         }
 
         
@@ -218,8 +232,10 @@ impl GameState {
 
         text!("Soup {}", self.soup.soup.len(); font = "TENPIXELS", x = 0, y = 8);
         text!("Day: {}", self.day; font = "TENPIXELS", x = 60, y = 8);
-        if self.day > 0 {
-            text!("Customer: {}", self.reader.customers[1].cusName; font = "TENPIXELS", x = 0, y = 270);
+        if self.day > 0 && !self.cusCheck{
+            text!("Customer: {}", self.reader.customers[self.currCus].cusName; font = "TENPIXELS", x = 0, y = 270);
+            text!("Order: {}", self.reader.customers[self.currCus].order[0].name; font = "TENPIXELS", x = 200, y = 270);
+            text!("{}", self.reader.customers[self.currCus].order[1].name; font = "TENPIXELS", x = 305, y = 270);
         }
         let mut offset = 100;
          for n in 0..self.soup.soup.len() {

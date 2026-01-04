@@ -46,6 +46,9 @@ impl UIButton {
     }
      pub fn tempDraw(&self, name: &str) {
         // Color references
+        if name == "empty" {
+            return;
+        }
         let (c1, c2): (u32, u32) = match self.hovered {
             true => (0x323b42ff, 0xffffffff),
             false => (0xffffffff, 0x323b42ff)
@@ -82,7 +85,6 @@ impl UIButton {
                 return (self.hitbox.0, self.hitbox.1);
             } else if m.pressed() && self.text == "soup" {
                 self.action = true;
-                text!("hi", x = 0, y = 50);
                 return (self.hitbox.0, self.hitbox.1);
             } else {
                 self.action = false;

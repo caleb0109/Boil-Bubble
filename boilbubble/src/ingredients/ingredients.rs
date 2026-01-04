@@ -33,11 +33,11 @@ impl Ingredient {
     }
     pub fn setType(&mut self, typeID: &str) {
         match typeID {
-            "Sweet" => self.ingredType = IngredientType::Sweet,
-            "Saltly" => self.ingredType = IngredientType::Saltly,
+            "Sugar" => self.ingredType = IngredientType::Sweet,
+            "Salt" => self.ingredType = IngredientType::Saltly,
             "Sour" => self.ingredType = IngredientType::Sour,
             "Aromatic" => self.ingredType = IngredientType::Aromatic,
-            "Spicy" => self.ingredType = IngredientType::Spicy,
+            "Peppers" => self.ingredType = IngredientType::Spicy,
             "Earthy" => self.ingredType = IngredientType::Earthy,
             "Savory" => self.ingredType = IngredientType::Savory,
             "Fruity" => self.ingredType = IngredientType::Fruity,

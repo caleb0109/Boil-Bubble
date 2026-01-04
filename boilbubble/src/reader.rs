@@ -14,6 +14,15 @@ pub struct Reader {
     pub ingredList: Vec<Ingredient>,
 }
 
+//file reader in order is:
+//1) Amount of customers
+//2) Amount of ingredients used that day
+//3) Starts customer data, name
+//4) order description
+//5) amount of ingredients that should be in the order
+//6) ingredient names for the order
+//7)if multiple customers, repeat steps 3-6 for each customer
+//8) ingredient name for the ingredient list used for day
 impl Reader {
     pub fn new() -> Self {
         Self {
@@ -58,10 +67,12 @@ impl Reader {
                 let ingredName= self.lines[self.current_line].clone();
                 self.current_line += 1;
                 order.push(Ingredient::new(&ingredName));
+                order[y].setType(&ingredName);
             }
             
             let cusOrder = Customer::new(name.as_str(), orderDesc.as_str(), order);
             self.customers.push(cusOrder);
+
         }
 
         for x in 0..self.ingredNum {

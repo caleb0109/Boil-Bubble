@@ -22,21 +22,32 @@ impl Customer {
         }
     }
 
-    pub fn createOrder(&self) {
-
-    }
-
     pub fn ticket(&self) {
         
     }
 
-    pub fn serverSoup(&mut self, soup: &Vec<Ingredient>) -> i32 {
+    pub fn serveSoup(&mut self, soup: &Vec<Ingredient>) -> i32 {
         for (i, ingredients) in self.order.iter().enumerate() {
             if ingredients.ingredType == soup[i].ingredType {
                 self.score += 1;
             }
         }
         return self.score;
+    }
+    
+    //checks if the soup in the pot is the same as the customer's order
+    pub fn soupCheck(&mut self, soup: &Vec<Ingredient>) -> bool {
+        if self.order.len() != soup.len() {
+            return false;
+        }
+
+        let mut check = true;
+        for (i, ingredients) in self.order.iter().enumerate() {
+            if ingredients.ingredType != soup[i].ingredType {
+                check = false;
+            }
+        }
+        return check;
     }
 
     //score calculation based on how many correct ingredients and patience time left

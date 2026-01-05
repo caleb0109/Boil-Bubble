@@ -23,7 +23,10 @@ impl Customer {
     }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
     pub fn createOrder(&self) {      
         text!(&self.orderDesc, x = 67, y = 268, font = "TENPIXELS");
 

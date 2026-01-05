@@ -22,11 +22,13 @@ struct GameState {
     timepass: usize,
     tList: Track,
     trackPrint: usize,
-    uibuttons: [UIButton; 3],
+    uibuttons: [UIButton; 4],
     soup: Soup,
     reader: reader::Reader,
     currCus: usize,
     cusCheck: bool,
+    cameraPos: (i32,i32),
+    timer: usize,
 }
 impl GameState {
     pub fn new() -> Self {
@@ -42,15 +44,19 @@ impl GameState {
                 UIButton::new("NextDay", (235.0, 240.0, 40.0, 20.0), false),
                 UIButton::new("soup", (145.0, 148.0, 210.0, 50.0), false),
                 UIButton::new("soupDump", (140.0, 75.0, 8.0, 8.0), false),
+                UIButton::new("start", (715.0, 245.0, 100.0, 20.0), false),
             ],
             soup: Soup::new(),
             reader: reader::Reader::new(),
             currCus: 0,
             cusCheck: false,
+            cameraPos: (765,143),
+            timer: 0,
         }
     }
     pub fn update(&mut self) {
         //sprites that cannot be interacted with
+        sprite!("titlescreen", x = 510, y = 0);
         sprite!("background", x= 0, y = 0);
         sprite!("cauldron", x = 145, y = 148);
         sprite!("bowls_lowertrack", x = 0, y = 0);
@@ -59,6 +65,8 @@ impl GameState {
         sprite!("list", x = 4, y = 88);
 
         self.uibuttons[1].draw();
+
+        camera::set_xy(self.cameraPos.0, self.cameraPos.1);
 
         let mut select: (f32,f32) = (0.0,0.0);
         let mut select2: (f32,f32) = (0.0,0.0);
@@ -73,6 +81,10 @@ impl GameState {
         //will look into further ways to optimize
         if time::tick() % 64 == 0 && self.trackPrint <= 7 && self.day > 0{
             self.trackPrint += 1;
+        }
+
+        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.timer < 60{
+            self.timer += 1;
         }
         //for loop to create the track
         for n in 0..self.trackPrint {
@@ -185,6 +197,7 @@ impl GameState {
                         self.trackPrint = 0;
                         self.currCus = 0;
                         self.cusCheck = false;
+                        self.timer = 0;
                         self.soup.limit = self.reader.customers[0].order.len();
                         self.soup.soup = Vec::new();
                         self.tList.dayIngredients(self.reader.ingredList.clone());
@@ -205,21 +218,32 @@ impl GameState {
                         self.soup.dumpSoup();
                         self.uibuttons[2].action = false;
                     }
+                    3 => {
+                        self.cameraPos.0 = 255;
+                        self.uibuttons[3].action = false;
+                    }
                     _ => {}
                 
                 }   
             }
             if n == 1{
                 continue;
-            } else {
+            } else if n == 3 {
+                self.uibuttons[n].draw();
+            }
+            else {
                 self.uibuttons[n].tempDraw("ui");
             }
             
         }
 
-        if self.soup.soup.len() == self.soup.limit && self.soup.limit != 0 && self.reader.customers[self.currCus].soupCheck(self.soup.soup.as_ref()) && !self.cusCheck{
-            self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
+        if self.soup.soup.len() == self.soup.limit && self.soup.limit != 0 && self.reader.customers[self.currCus].soupCheck(self.soup.soup.as_ref()) && !self.cusCheck
+        || self.timer == 60 && self.soup.limit != 0 && !self.cusCheck {
+            if self.timer != 60 {
+                self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
+            }
             self.currCus += 1;
+            self.timer = 0;
             self.soup.soup = Vec::new();
             if self.currCus != self.reader.custNum {
                 self.soup.limit = self.reader.customers[self.currCus].order.len();
@@ -240,8 +264,9 @@ impl GameState {
         text!("Day: {}", self.day; font = "TENPIXELS", x = 60, y = 8);
         if self.day > 0 && !self.cusCheck{
             text!("Customer: {}", self.reader.customers[self.currCus].cusName; font = "TENPIXELS", x = 0, y = 270);
-            text!("Order: {}", self.reader.customers[self.currCus].order[0].name; font = "TENPIXELS", x = 200, y = 270);
-            text!("{}", self.reader.customers[self.currCus].order[1].name; font = "TENPIXELS", x = 305, y = 270);
+            text!("Order: {}", self.reader.customers[self.currCus].order[0].name; font = "TENPIXELS", x = 30, y = 140);
+            text!("{}", self.reader.customers[self.currCus].order[1].name; font = "TENPIXELS", x = 30, y = 150);
+            text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
         }
         let mut offset = 100;
          for n in 0..self.soup.soup.len() {

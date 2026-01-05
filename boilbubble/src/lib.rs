@@ -44,7 +44,7 @@ impl GameState {
                 UIButton::new("NextDay", (235.0, 240.0, 40.0, 20.0), false),
                 UIButton::new("soup", (145.0, 148.0, 210.0, 50.0), false),
                 UIButton::new("soupDump", (140.0, 75.0, 8.0, 8.0), false),
-                UIButton::new("start", (715.0, 245.0, 100.0, 20.0), false),
+                UIButton::new("start", (582.0, 174.0, 100.0, 20.0), false),
             ],
             soup: Soup::new(),
             reader: reader::Reader::new(),

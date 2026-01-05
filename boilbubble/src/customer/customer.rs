@@ -7,7 +7,7 @@ pub struct Customer {
     pub cusName: String,
     pub orderDesc: String,
     pub order: Vec<Ingredient>,
-    pub patienceTime: usize,
+    //pub patienceTime: usize,
     pub score: i32,
 }
 
@@ -17,30 +17,31 @@ impl Customer {
             cusName: name.to_string(),
             orderDesc: orderDesc.to_string(),
             order: order,
-            patienceTime: 15,
+            //patienceTime: 15,
             score: 0,
         }
     }
 
-    pub fn createOrder(&self) {      
+    pub fn createOrder(&mut self, timer: usize) {      
         text!(&self.orderDesc, x = 67, y = 268, font = "TENPIXELS");
+        //self.patienceTime = 15 - timer;
 
-        if self.patienceTime > 10 {
+        if timer <= 5 {
             let cusSprite = format!("customers#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
-        } else if self.patienceTime < 10 && self.patienceTime > 7 {
+        } else if timer > 5 && timer <= 8 {
             let cusSprite = format!("customers_patience1#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
-        } else if self.patienceTime < 7 && self.patienceTime > 5 {
+        } else if timer > 8 && timer <= 12 {
             let cusSprite = format!("customers_patience2#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
-        } else if self.patienceTime < 5 && self.patienceTime > 3 {
+        } else if timer > 12 && timer <= 15 {
             let cusSprite = format!("customers_patience3#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
         }
 
     }
-    
+
     pub fn ticket(&self) {
         
     }

@@ -17,11 +17,33 @@ impl Customer {
             cusName: name.to_string(),
             orderDesc: orderDesc.to_string(),
             order: order,
-            patienceTime: 0,
+            patienceTime: 15,
             score: 0,
         }
     }
 
+<<<<<<< Updated upstream
+=======
+    pub fn createOrder(&self) {      
+        text!(&self.orderDesc, x = 67, y = 268, font = "TENPIXELS");
+
+        if self.patienceTime > 10 {
+            let cusSprite = format!("customers#{}", &self.cusName);
+            sprite!(&cusSprite, x = 0, y  = 261);
+        } else if self.patienceTime < 10 && self.patienceTime > 7 {
+            let cusSprite = format!("customers_patience1#{}", &self.cusName);
+            sprite!(&cusSprite, x = 0, y  = 261);
+        } else if self.patienceTime < 7 && self.patienceTime > 5 {
+            let cusSprite = format!("customers_patience2#{}", &self.cusName);
+            sprite!(&cusSprite, x = 0, y  = 261);
+        } else if self.patienceTime < 5 && self.patienceTime > 3 {
+            let cusSprite = format!("customers_patience3#{}", &self.cusName);
+            sprite!(&cusSprite, x = 0, y  = 261);
+        }
+
+    }
+
+>>>>>>> Stashed changes
     pub fn ticket(&self) {
         
     }

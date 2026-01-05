@@ -22,23 +22,6 @@ impl Customer {
         }
     }
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     pub fn createOrder(&self) {      
         text!(&self.orderDesc, x = 67, y = 268, font = "TENPIXELS");
 
@@ -57,8 +40,7 @@ impl Customer {
         }
 
     }
-
->>>>>>> Stashed changes
+    
     pub fn ticket(&self) {
         
     }

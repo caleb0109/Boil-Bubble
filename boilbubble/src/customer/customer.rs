@@ -56,6 +56,7 @@ impl Customer {
     }
     
     //checks if the soup in the pot is the same as the customer's order
+    //REDO, MIGHT NOT BE CHECKING CORRECTLY (SAME AS SERVESOUP)
     pub fn soupCheck(&mut self, soup: &Vec<Ingredient>) -> bool {
         if self.order.len() != soup.len() {
             return false;
@@ -63,7 +64,7 @@ impl Customer {
 
         let mut check = true;
         for (i, ingredients) in self.order.iter().enumerate() {
-            if ingredients.ingredType != soup[i].ingredType {
+            if ingredients.name != soup[i].name {
                 check = false;
             }
         }

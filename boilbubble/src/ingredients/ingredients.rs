@@ -7,15 +7,11 @@ pub enum IngredientType {
     Sweet,
     Saltly,
     Sour,
-    Aromatic,
     Spicy,
     Earthy,
     Savory,
     Fruity,
     Thick,
-    Chunky,
-    Heavy,
-    Light
 }
 
 #[turbo::serialize]
@@ -33,18 +29,22 @@ impl Ingredient {
     }
     pub fn setType(&mut self, typeID: &str) {
         match typeID {
-            "Sugar" => self.ingredType = IngredientType::Sweet,
-            "Salt" => self.ingredType = IngredientType::Saltly,
-            "Sour" => self.ingredType = IngredientType::Sour,
-            "Aromatic" => self.ingredType = IngredientType::Aromatic,
-            "Peppers" => self.ingredType = IngredientType::Spicy,
-            "Earthy" => self.ingredType = IngredientType::Earthy,
-            "Savory" => self.ingredType = IngredientType::Savory,
-            "Fruity" => self.ingredType = IngredientType::Fruity,
-            "Thick" => self.ingredType = IngredientType::Thick,
-            "Chunky" => self.ingredType = IngredientType::Chunky,
-            "Heavy" => self.ingredType = IngredientType::Heavy,
-            "Light" => self.ingredType = IngredientType::Light,
+            "sugar" => self.ingredType = IngredientType::Sweet,
+            "chocolate" => self.ingredType = IngredientType::Sweet,
+            "salt" => self.ingredType = IngredientType::Saltly,
+            "olives" => self.ingredType = IngredientType::Saltly,
+            "lemon" => self.ingredType = IngredientType::Sour,
+            "cranberries" => self.ingredType = IngredientType::Sour,
+            "peppers" => self.ingredType = IngredientType::Spicy,
+            "ginger" => self.ingredType = IngredientType::Spicy,
+            "mushroom" => self.ingredType = IngredientType::Earthy,
+            "carrot" => self.ingredType = IngredientType::Earthy,
+            "meat" => self.ingredType = IngredientType::Savory,
+            "fish" => self.ingredType = IngredientType::Savory,
+            "apple" => self.ingredType = IngredientType::Fruity,
+            "watermelon" => self.ingredType = IngredientType::Fruity,
+            "cheese" => self.ingredType = IngredientType::Thick,
+            "flour" => self.ingredType = IngredientType::Thick,
             _ => (),
         }
     }

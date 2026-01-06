@@ -135,6 +135,7 @@ impl GameState {
                 self.soup.addIngredients(self.tList.ingredPos1[n].1.clone());
                 //self.tList.ingredPos2[n].1.ingredType = crate::ingredients::IngredientType::Empty;
                 self.tList.ingredPos1[n].1.name = "empty".to_string();
+                self.tList.ingredPos1[n].1.setType("empty");
                 self.tList.ingredPos1[n].0.action = false;
                 
             } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && 
@@ -142,8 +143,10 @@ impl GameState {
                 self.soup.addIngredients(self.tList.ingredPos2[n].1.clone());
                 //self.tList.ingredPos2[n].1.ingredType = crate::ingredients::IngredientType::Empty;
                 self.tList.ingredPos2[n].1.name = "empty".to_string();
+                self.tList.ingredPos2[n].1.setType("empty");
                 self.tList.ingredPos2[n].0.action = false;
             }
+
             //if the ingredient isn't being held, then set its position to the track position
             if !self.tList.ingredPos1[n].0.action {
                 self.tList.ingredPos1[n].0.hitbox.0 = self.tList.trackPos1[n].0;
@@ -153,35 +156,35 @@ impl GameState {
                 self.tList.ingredPos2[n].0.hitbox.0 = self.tList.trackPos2[n].0;
                 self.tList.ingredPos2[n].0.hitbox.1 = self.tList.trackPos2[n].1;
             }
+
             //if the pointer releases the ingredient, ingredient is not active
-            
-            
             if m.just_released() {
                 self.tList.ingredPos1[n].0.action = false;
                 self.tList.ingredPos2[n].0.action = false;
             }
 
-            
-            //if it has a specific name and , then draw rect to see difference
+            //prints ingredients sprite
+            // self.tList.ingredPos1[n].0.draw();
+            // self.tList.ingredPos2[n].0.draw();
+            //sprite!(self.tList.ingredPos1[n].1.name.as_str(), x = self.tList.ingredPos1[n].0.hitbox.0, y = self.tList.ingredPos1[n].0.hitbox.1);
+            //sprite!(self.tList.ingredPos2[n].1.name.as_str(), x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1);
 
-            self.tList.ingredPos1[n].0.tempDraw(self.tList.ingredPos1[n].1.name.as_str());
-            self.tList.ingredPos2[n].0.tempDraw(self.tList.ingredPos2[n].1.name.as_str());
+
             //if the track item reaches the end of the screen, then reset it to start
             if !self.tList.trackPos1[n].2 {
-                sprite!("bowl", x = self.tList.trackPos1[n].0, y = self.tList.trackPos1[n].1);
-                sprite!(&self.tList.ingredPos1[n].1.name, x = self.tList.trackPos1[n].0, y = self.tList.trackPos1[n].1 - 11.0);
+                sprite!("bowl", x = self.tList.ingredPos1[n].0.hitbox.0, y = self.tList.ingredPos1[n].0.hitbox.1);
+                sprite!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 11.0);
                 //circ!(x = self.tList.trackPos1[n].0, y = self.tList.trackPos1[n].1, d=8, color = 0x32CD32ff);
             } else if self.tList.trackPos1[n].2 {
                 if self.tList.ingredPos1[n].1.name == "empty" {
                     self.tList.ingredPos1[n].1 = self.tList.ingredientGen();
-                    
                 }
                 self.tList.trackPos1[n].2 = false;
                 self.tList.trackPos1[n].0 = 0.0;
             }
             if !self.tList.trackPos2[n].2 {
-                sprite!("bowl", x = self.tList.trackPos2[n].0, y = self.tList.trackPos2[n].1);
-                sprite!(&self.tList.ingredPos2[n].1.name, x = self.tList.trackPos2[n].0, y = self.tList.trackPos2[n].1 - 11.0);
+                sprite!("bowl", x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1);
+                sprite!(&self.tList.ingredPos2[n].1.name, x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1 - 11.0);
                 //circ!(x = self.tList.trackPos2[n].0, y = self.tList.trackPos2[n].1, d=8, color = 0x32CD32ff);
             } else if self.tList.trackPos2[n].2 {
                 if self.tList.ingredPos2[n].1.name == "empty" {
@@ -190,7 +193,7 @@ impl GameState {
                 self.tList.trackPos2[n].2 = false;
                 self.tList.trackPos2[n].0 = 510.0;
             }
-            yPos += 10.0;
+            //yPos += 10.0;
             //text!("ingred: {}", self.tList.ingredPos1[n].1.name; x = 0, y = yPos);
         }
 

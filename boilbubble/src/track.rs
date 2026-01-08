@@ -115,6 +115,5 @@ impl Track {
             0 => {return Ingredient::new("empty")}
             _ => {return self.ingredList[choice].clone()}
         }
-        
     }
 }

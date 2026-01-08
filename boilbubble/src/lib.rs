@@ -80,6 +80,11 @@ impl GameState {
         sprite!("borders", x = 0, y = 0);
         sprite!("customer_speech", x = 59, y = 266);
 
+        if !audio::is_playing("boil_and_bubble") {
+            audio::play("boil_and_bubble");
+            audio::set_volume("boil_and_bubble", 0.1);
+        }
+
         self.uibuttons[1].draw();
        
         //timer
@@ -148,6 +153,8 @@ impl GameState {
             if self.tList.ingredPos1[n].0.hover(self.tList.ingredPos1[n].0.hitbox, x, y) && 
                self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released(){
                 self.soup.addIngredients(self.tList.ingredPos1[n].1.clone());
+                audio::play("splash");
+                audio::set_volume("splash", 0.1);
                 //self.tList.ingredPos2[n].1.ingredType = crate::ingredients::IngredientType::Empty;
                 self.tList.ingredPos1[n].1.name = "empty".to_string();
                 self.tList.ingredPos1[n].1.setType("empty");
@@ -325,6 +332,8 @@ impl GameState {
                 self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
             }
             if t >= self.timeStamp + 600 {
+                audio::play("bell");
+                audio::set_volume("bell", 0.1);
                 self.currCus += 1;
                 self.timer = 0;
                 self.soup.soup = Vec::new();

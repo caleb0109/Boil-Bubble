@@ -66,7 +66,7 @@ impl Reader {
             for y in 0..orderSize {
                 let ingredName= self.lines[self.current_line].clone();
                 self.current_line += 1;
-                order.push(Ingredient::new(&ingredName));
+                order.push(Ingredient::new("empty"));
                 order[y].setType(&ingredName);
             }
             
@@ -77,8 +77,9 @@ impl Reader {
 
         for x in 0..self.ingredNum {
             let ingred = Ingredient::new(self.lines[self.current_line].as_str());
-            self.current_line += 1;
             self.ingredList.push(ingred);
+            self.ingredList[x].setType(&self.lines[self.current_line]);
+            self.current_line += 1;
         }
     }
 }

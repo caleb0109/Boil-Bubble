@@ -64,7 +64,7 @@ impl Customer {
 
         let mut check = true;
         for (i, ingredients) in self.order.iter().enumerate() {
-            if ingredients.name != soup[i].name {
+            if ingredients.ingredType != soup[i].ingredType {
                 check = false;
             }
         }

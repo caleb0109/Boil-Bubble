@@ -45,7 +45,17 @@ impl Ingredient {
             "watermelon" => self.ingredType = IngredientType::Fruity,
             "cheese" => self.ingredType = IngredientType::Thick,
             "flour" => self.ingredType = IngredientType::Thick,
+            //customer order types specifically
+            "Sweet" => self.ingredType = IngredientType::Sweet,
+            "Saltly" => self.ingredType = IngredientType::Saltly,
+            "Sour" => self.ingredType = IngredientType::Sour,
+            "Spicy" => self.ingredType = IngredientType::Spicy,
+            "Earthy" => self.ingredType = IngredientType::Earthy,
+            "Savory" => self.ingredType = IngredientType::Savory,
+            "Fruity" => self.ingredType = IngredientType::Fruity,
+            "Thick" => self.ingredType = IngredientType::Thick,
             _ => (),
         }
     }
+    
 }

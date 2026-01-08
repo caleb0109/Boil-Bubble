@@ -215,9 +215,7 @@ impl GameState {
                 sprite!("bowl", x = self.tList.ingredPos1[n].0.hitbox.0, y = self.tList.ingredPos1[n].0.hitbox.1);
                 sprite!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 11.0);
             } else if self.tList.trackPos1[n].2 {
-                if self.tList.ingredPos1[n].1.name == "empty" {
-                    self.tList.ingredPos1[n].1 = self.tList.ingredientGen();
-                }
+                self.tList.ingredPos1[n].1 = self.tList.ingredientGen();
                 self.tList.trackPos1[n].2 = false;
                 self.tList.trackPos1[n].0 = 0.0;
             }
@@ -225,9 +223,7 @@ impl GameState {
                 sprite!("bowl", x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1);
                 sprite!(&self.tList.ingredPos2[n].1.name, x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1 - 11.0);
             } else if self.tList.trackPos2[n].2 {
-                if self.tList.ingredPos2[n].1.name == "empty" {
-                    self.tList.ingredPos2[n].1 = self.tList.ingredientGen();
-                }
+                self.tList.ingredPos2[n].1 = self.tList.ingredientGen();
                 self.tList.trackPos2[n].2 = false;
                 self.tList.trackPos2[n].0 = 510.0;
             }
@@ -353,15 +349,15 @@ impl GameState {
 
         if self.day > 0 && !self.cusCheck{
             //text!("Customer: {}", self.reader.customers[self.currCus].cusName; font = "TENPIXELS", x = 0, y = 270);
-            text!("Order: {}", self.reader.customers[self.currCus].order[0].name; font = "TENPIXELS", x = 30, y = 140);
-            text!("{}", self.reader.customers[self.currCus].order[1].name; font = "TENPIXELS", x = 30, y = 150);
+            text!("Order: {:?}", self.reader.customers[self.currCus].order[0].ingredType; font = "TENPIXELS", x = 30, y = 140);
+            text!("{:?}", self.reader.customers[self.currCus].order[1].ingredType; font = "TENPIXELS", x = 30, y = 150);
             //text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
             self.reader.customers[self.currCus].createOrder(self.cusTimer);
         }
         let mut offset = 100;
          for n in 0..self.soup.soup.len() {
             offset += 40;
-            text!("{}", self.soup.soup[n].name; x = offset, y = 8);
+            text!("{:?}", self.soup.soup[n].ingredType; x = offset, y = 8);
          }
         
 

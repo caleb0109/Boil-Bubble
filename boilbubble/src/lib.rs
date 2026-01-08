@@ -35,6 +35,8 @@ struct GameState {
     tutorial: usize,
     timeStamp: usize,
     totalScore: i32,
+    startDay: bool,
+    checked: Vec<bool>,
     endScreen: bool,
 }
 impl GameState {
@@ -66,6 +68,8 @@ impl GameState {
             tutorial: 0,
             timeStamp: time::tick(),
             totalScore: 0,
+            startDay: false,
+            checked: vec![false; 8],
             endScreen: false,
         }
     }
@@ -216,15 +220,19 @@ impl GameState {
                 self.tList.ingredPos2[n].0.action = false;
             }
 
-            
 
-
+            if self.startDay && self.checked[n] == false {
+                self.tList.ingredPos1[n].1 = self.tList.ingredientGen();
+                self.tList.ingredPos2[n].1 = self.tList.ingredientGen();
+                self.checked[n] = true;
+            }
             //if the track item reaches the end of the screen, then reset it to start
             //if the track item is not at the end of the screen, draws the bowl and ingredient
             if !self.tList.trackPos1[n].2 {
                 sprite!("bowl", x = self.tList.ingredPos1[n].0.hitbox.0, y = self.tList.ingredPos1[n].0.hitbox.1);
                 sprite!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 11.0);
             } else if self.tList.trackPos1[n].2 {
+                self.startDay = false;
                 self.tList.ingredPos1[n].1 = self.tList.ingredientGen();
                 self.tList.trackPos1[n].2 = false;
                 self.tList.trackPos1[n].0 = 0.0;
@@ -233,6 +241,7 @@ impl GameState {
                 sprite!("bowl", x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1);
                 sprite!(&self.tList.ingredPos2[n].1.name, x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1 - 11.0);
             } else if self.tList.trackPos2[n].2 {
+                self.startDay = false;
                 self.tList.ingredPos2[n].1 = self.tList.ingredientGen();
                 self.tList.trackPos2[n].2 = false;
                 self.tList.trackPos2[n].0 = 510.0;
@@ -283,6 +292,7 @@ impl GameState {
                         self.timer = 0;
                         self.totalScore = 0;
                         self.endScreen = false;
+                        self.startDay = true;
                         self.soup.limit = self.reader.customers[0].order.len();
                         self.soup.soup = Vec::new();
                         self.tList.dayIngredients(self.reader.ingredList.clone());

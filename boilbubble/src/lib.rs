@@ -170,6 +170,8 @@ impl GameState {
             } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && 
                self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released(){
                 self.soup.addIngredients(self.tList.ingredPos2[n].1.clone());
+                audio::play("splash");
+                audio::set_volume("splash", 0.1);
                 //self.tList.ingredPos2[n].1.ingredType = crate::ingredients::IngredientType::Empty;
                 self.tList.ingredPos2[n].1.name = "empty".to_string();
                 self.tList.ingredPos2[n].1.setType("empty");

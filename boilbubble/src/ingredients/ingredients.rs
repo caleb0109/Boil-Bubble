@@ -5,7 +5,7 @@ use turbo::*;
 //enum to define different ingredient types
 pub enum IngredientType {
     Sweet,
-    Saltly,
+    Salty,
     Sour,
     Spicy,
     Earthy,
@@ -31,8 +31,8 @@ impl Ingredient {
         match typeID {
             "sugar" => self.ingredType = IngredientType::Sweet,
             "chocolate" => self.ingredType = IngredientType::Sweet,
-            "salt" => self.ingredType = IngredientType::Saltly,
-            "olives" => self.ingredType = IngredientType::Saltly,
+            "salt" => self.ingredType = IngredientType::Salty,
+            "olives" => self.ingredType = IngredientType::Salty,
             "lemon" => self.ingredType = IngredientType::Sour,
             "cranberries" => self.ingredType = IngredientType::Sour,
             "peppers" => self.ingredType = IngredientType::Spicy,
@@ -47,7 +47,7 @@ impl Ingredient {
             "flour" => self.ingredType = IngredientType::Thick,
             //customer order types specifically
             "Sweet" => self.ingredType = IngredientType::Sweet,
-            "Saltly" => self.ingredType = IngredientType::Saltly,
+            "Salty" => self.ingredType = IngredientType::Salty,
             "Sour" => self.ingredType = IngredientType::Sour,
             "Spicy" => self.ingredType = IngredientType::Spicy,
             "Earthy" => self.ingredType = IngredientType::Earthy,

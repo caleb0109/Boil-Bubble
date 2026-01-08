@@ -73,7 +73,12 @@ impl GameState {
         sprite!("cauldron", x = 145, y = 148);
         sprite!("bowls_lowertrack", x = 0, y = 0);
         sprite!("bowls_uppertrack", x = 0, y = 0);
+<<<<<<< Updated upstream
         sprite!("cat", x = 181, y =65);
+=======
+        sprite!("borders", x = 0, y = 0);
+        sprite!("customer_speech", x = 59, y = 266);
+>>>>>>> Stashed changes
         
         //UI
         sprite!("list", x = 4, y = 88);
@@ -114,7 +119,7 @@ impl GameState {
             self.timer += 1;
         }
 
-         if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.timer < 15{
+        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.timer <= 15{
             self.cusTimer += 1;
         }
 
@@ -325,12 +330,21 @@ impl GameState {
             
         }
 
+<<<<<<< Updated upstream
         let t = time::tick();
+=======
+        if self.cusTimer == 15 {
+            self.currCus += 1;
+            self.cusTimer = 0;
+        }
+
+>>>>>>> Stashed changes
         if self.soup.soup.len() == self.soup.limit && self.soup.limit != 0 && self.reader.customers[self.currCus].soupCheck(self.soup.soup.as_ref()) && !self.cusCheck
         || self.timer == 60 && self.soup.limit != 0 && !self.cusCheck {
             if self.timer != 60 {
                 self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
             }
+<<<<<<< Updated upstream
             if t >= self.timeStamp + 600 {
                 audio::play("bell");
                 audio::set_volume("bell", 0.1);
@@ -344,29 +358,60 @@ impl GameState {
                     self.endScreen = true;
                     self.cusCheck = true;
                 }
+=======
+            self.currCus += 1;
+            self.timer = 0;
+            self.soup.soup = Vec::new();
+            
+            if self.currCus != self.reader.custNum {
+                self.soup.limit = self.reader.customers[self.currCus].order.len();
+            } else {
+                self.cusCheck = true;
+>>>>>>> Stashed changes
             }
         }
 
 
+<<<<<<< Updated upstream
         
+=======
+>>>>>>> Stashed changes
         
-        log!("{}", self.cusTimer);
+        //log!("{}", self.cusTimer);
 
         
+<<<<<<< Updated upstream
         
+=======
+        //UI
+>>>>>>> Stashed changes
         
 
         if self.day > 0 && !self.cusCheck{
             //text!("Customer: {}", self.reader.customers[self.currCus].cusName; font = "TENPIXELS", x = 0, y = 270);
+<<<<<<< Updated upstream
             text!("Order: {:?}", self.reader.customers[self.currCus].order[0].ingredType; font = "TENPIXELS", x = 30, y = 140);
             text!("{:?}", self.reader.customers[self.currCus].order[1].ingredType; font = "TENPIXELS", x = 30, y = 150);
+=======
+            //text!("Order: {}", self.reader.customers[self.currCus].order[0].name; font = "TENPIXELS", x = 30, y = 140);
+            //text!("{}", self.reader.customers[self.currCus].order[1].name; font = "TENPIXELS", x = 30, y = 150);
+>>>>>>> Stashed changes
             //text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
+
+            text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
             self.reader.customers[self.currCus].createOrder(self.cusTimer);
         }
+<<<<<<< Updated upstream
         let mut offset = 100;
          for n in 0..self.soup.soup.len() {
             offset += 40;
             text!("{:?}", self.soup.soup[n].ingredType; x = offset, y = 8);
+=======
+        let mut offset = 98;
+         for n in 0..self.soup.soup.len() {     
+            offset += 14;       
+            text!("-{}", self.soup.soup[n].name; x = 25, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
+>>>>>>> Stashed changes
          }
         
 

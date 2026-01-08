@@ -23,7 +23,7 @@ impl Customer {
     }
 
     pub fn createOrder(&mut self, timer: usize) {      
-        text!(&self.orderDesc, x = 67, y = 268, font = "TENPIXELS");
+        text!(&self.orderDesc, x = 67, y = 268, font = "TENPIXELS", color = s);
         //self.patienceTime = 15 - timer;
 
         if timer <= 5 {
@@ -35,7 +35,7 @@ impl Customer {
         } else if timer > 8 && timer <= 12 {
             let cusSprite = format!("customers_patience2#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
-        } else if timer > 12 && timer <= 15 {
+        } else if timer > 12 && timer <= 16 {
             let cusSprite = format!("customers_patience3#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
         }

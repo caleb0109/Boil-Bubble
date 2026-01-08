@@ -42,40 +42,32 @@ impl Customer {
 
     }
 
-    pub fn ticket(&self) {
-        
-    }
-
     pub fn serveSoup(&mut self, soup: &Vec<Ingredient>) -> i32 {
-        for (i, ingredients) in self.order.iter().enumerate() {
-            if ingredients.ingredType == soup[i].ingredType {
-                self.score += 1;
+        if soup.len() == 0 {
+            self.score = 0;
+            return self.score;
+        }
+        let mut checked: Vec<bool> = vec![false; self.order.len()];
+        for n in 0..self.order.len() {
+            for m in 0..soup.len() {
+                if !checked[m] {
+                    if self.order[n].ingredType == soup[m].ingredType {
+                        checked[m] = true;
+                        self.score += 1;
+                    }
+                } 
             }
         }
         return self.score;
-    }
-    
-    //checks if the soup in the pot is the same as the customer's order
-    //REDO, MIGHT NOT BE CHECKING CORRECTLY (SAME AS SERVESOUP)
-    pub fn soupCheck(&mut self, soup: &Vec<Ingredient>) -> bool {
-        if self.order.len() != soup.len() {
-            return false;
-        }
-
-        let mut check = true;
-        for (i, ingredients) in self.order.iter().enumerate() {
-            if ingredients.ingredType != soup[i].ingredType {
-                check = false;
-            }
-        }
-        return check;
     }
 
     //score calculation based on how many correct ingredients and patience time left
     //score split:
     // - ingredients correct: 80%
     // - patience time left: 20%
-    pub fn calculateScore(&mut self) -> i32 {
-        return self.score;
+    pub fn calculateScore(&mut self, cusTimer: usize) -> i32 {
+        let ingredScore = (self.score as f32 / self.order.len() as f32) * 80.0;
+        let timeScore = ((15 - cusTimer) as f32 / 15.0) * 20.0;
+        return (ingredScore + timeScore) as i32;
     }
 }

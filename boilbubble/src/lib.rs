@@ -121,7 +121,7 @@ impl GameState {
             self.timer += 1;
         }
 
-        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.timer <= 15{
+        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.cusTimer <= 15{
             self.cusTimer += 1;
         }
 
@@ -382,11 +382,16 @@ impl GameState {
             text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
             self.reader.customers[self.currCus].createOrder(self.cusTimer);
         }
+        let mut offsetdashes = 98;
+        for n in 0..self.soup.limit {
+            offsetdashes += 14;
+            text!("-", x = 25, y = offsetdashes, font = "TENPIXELS", color = 0x2d1e1eff);
+        }
         let mut offset = 98;
-         for n in 0..self.soup.soup.len() {     
+        for n in 0..self.soup.soup.len() {     
             offset += 14;       
-            text!("-{}", self.soup.soup[n].name; x = 25, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
-         }
+            text!("-{}", self.soup.soup[n].name; x = 28, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
+        }
         
 
     }

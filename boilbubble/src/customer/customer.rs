@@ -23,7 +23,7 @@ impl Customer {
     }
 
     pub fn createOrder(&mut self, timer: usize) {      
-        text!(&self.orderDesc, x = 67, y = 268, font = "TENPIXELS", color = s);
+        text!(&self.orderDesc, x = 67, y = 268, font = "TENPIXELS", color = 0x2d1e1eff);
         //self.patienceTime = 15 - timer;
 
         if timer <= 5 {

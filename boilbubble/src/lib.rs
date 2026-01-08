@@ -117,7 +117,7 @@ impl GameState {
             self.timer += 1;
         }
 
-         if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.timer < 15{
+        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.timer <= 15{
             self.cusTimer += 1;
         }
 
@@ -363,15 +363,17 @@ impl GameState {
 
         if self.day > 0 && !self.cusCheck{
             //text!("Customer: {}", self.reader.customers[self.currCus].cusName; font = "TENPIXELS", x = 0, y = 270);
-            text!("Order: {:?}", self.reader.customers[self.currCus].order[0].ingredType; font = "TENPIXELS", x = 30, y = 140);
-            text!("{:?}", self.reader.customers[self.currCus].order[1].ingredType; font = "TENPIXELS", x = 30, y = 150);
+            //text!("Order: {:?}", self.reader.customers[self.currCus].order[0].ingredType; font = "TENPIXELS", x = 30, y = 140);
+            //text!("{:?}", self.reader.customers[self.currCus].order[1].ingredType; font = "TENPIXELS", x = 30, y = 150);
             //text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
+
+            text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
             self.reader.customers[self.currCus].createOrder(self.cusTimer);
         }
-        let mut offset = 100;
-         for n in 0..self.soup.soup.len() {
-            offset += 40;
-            text!("{:?}", self.soup.soup[n].ingredType; x = offset, y = 8);
+        let mut offset = 98;
+         for n in 0..self.soup.soup.len() {     
+            offset += 14;       
+            text!("-{}", self.soup.soup[n].name; x = 25, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
          }
         
 

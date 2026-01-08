@@ -24,7 +24,7 @@ struct GameState {
     trackPrint: usize,
     ingredHold: bool,
     ingredCheck: usize,
-    uibuttons: [UIButton; 5],
+    uibuttons: [UIButton; 6],
     soup: Soup,
     reader: reader::Reader,
     currCus: usize,
@@ -34,6 +34,7 @@ struct GameState {
     cusTimer: usize,
     tutorial: usize,
     timeStamp: usize,
+    totalScore: i32,
     endScreen: bool,
 }
 impl GameState {
@@ -53,6 +54,7 @@ impl GameState {
                 UIButton::new("soupDump", (140.0, 75.0, 8.0, 8.0), false),
                 UIButton::new("start", (582.0, 174.0, 100.0, 20.0), false),
                 UIButton::new("continue", (195.0,230.0, 100.0, 20.0), false),
+                UIButton::new("serve", (195.0,230.0, 100.0, 20.0), false),
             ],
             soup: Soup::new(),
             reader: reader::Reader::new(),
@@ -63,6 +65,7 @@ impl GameState {
             cusTimer: 0,
             tutorial: 0,
             timeStamp: time::tick(),
+            totalScore: 0,
             endScreen: false,
         }
     }
@@ -247,7 +250,7 @@ impl GameState {
         if self.endScreen {
             sprite!("scorescreen", x = 0, y = 0);
             text!("Customer Served!", font = "TENPIXELS", x = 180, y = 130);
-            text!("Score: {}", self.reader.customers[self.currCus -1].score; font = "TENPIXELS", x = 220, y = 150);
+            text!("Score: {}", self.totalScore; font = "TENPIXELS", x = 220, y = 150);
             text!("Time: {}", self.timer; font = "TENPIXELS", x = 220, y = 165);       
         }
 
@@ -259,6 +262,8 @@ impl GameState {
             } else if self.tutorial == 1 && n == 4 {
                 self.uibuttons[n].action = false;
             } else if !self.endScreen && n == 0 && self.tutorial >= 2{
+                self.uibuttons[n].action = false;
+            } else if !self.endScreen && n == 5 && self.tutorial <= 3{
                 self.uibuttons[n].action = false;
             }
                     //if pressed, goes to next day, resets all track positions, empties soup, and sets soup limit
@@ -276,6 +281,7 @@ impl GameState {
                         self.currCus = 0;
                         self.cusCheck = false;
                         self.timer = 0;
+                        self.totalScore = 0;
                         self.endScreen = false;
                         self.soup.limit = self.reader.customers[0].order.len();
                         self.soup.soup = Vec::new();
@@ -308,6 +314,30 @@ impl GameState {
                         self.tutorial += 1;
                         self.uibuttons[4].action = false;
                     }
+                    5 => {
+                        
+                        if self.timer != 60 && self.soup.soup.len() > 0{
+                            audio::play("bell");
+                            audio::set_volume("bell", 0.1);
+                            self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
+                            self.currCus += 1;
+                            self.timer = 0;
+                            self.soup.soup = Vec::new();
+                            self.cusTimer = 0;
+                        }
+                        
+                        if self.currCus != self.reader.custNum {
+                            self.soup.limit = self.reader.customers[self.currCus].order.len();
+                        } else {
+                            
+                            for n in 0..self.reader.customers.len() {
+                                self.totalScore += self.reader.customers[n].calculateScore(self.cusTimer);
+                            }
+                            self.endScreen = true;
+                            self.cusCheck = true;
+                        }
+                        self.uibuttons[5].action = false;
+                    }
                     _ => {}
                 
                 }   
@@ -318,46 +348,14 @@ impl GameState {
                 self.uibuttons[n].draw();
             } else if n == 3 || n == 4 && self.tutorial <= 0{
                 self.uibuttons[n].draw();
+            } else if n == 5 && self.tutorial >=2 && !self.endScreen{
+                self.uibuttons[n].tempDraw(&self.uibuttons[n].text.as_str());
             }
-            // else {
-            //     self.uibuttons[n].tempDraw("ui");
-            // }
             
         }
 
-        let t = time::tick();
-        if self.cusTimer == 15 {
-            self.cusTimer = 0;
-            self.currCus += 1;
-            
-        }
-
-        if self.soup.soup.len() == self.soup.limit && self.soup.limit != 0 && self.reader.customers[self.currCus].soupCheck(self.soup.soup.as_ref()) && !self.cusCheck
-        || self.timer == 60 && self.soup.limit != 0 && !self.cusCheck {
-            if self.timer != 60 {
-                self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
-            }
-            if t >= self.timeStamp + 600 {
-                audio::play("bell");
-                audio::set_volume("bell", 0.1);
-                self.currCus += 1;
-                self.timer = 0;
-                self.soup.soup = Vec::new();
-                self.cusTimer = 0;
-                if self.currCus != self.reader.custNum {
-                    self.soup.limit = self.reader.customers[self.currCus].order.len();
-                } else {
-                    self.endScreen = true;
-                    self.cusCheck = true;
-                }
-            }
-        }
-
-
-        
-        
+        let t = time::tick();    
         log!("{}", self.cusTimer);
-
 
         
         

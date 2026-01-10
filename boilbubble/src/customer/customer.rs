@@ -57,21 +57,17 @@ impl Customer {
             self.score = 0.0;
             return self.score;
         }
-        let mut matches = 0;
         let mut checked: Vec<bool> = vec![false; self.order.len()];
         for n in 0..self.order.len() {
             for m in 0..soup.len() {
                 if !checked[m] {
                     if self.order[n].ingredType == soup[m].ingredType {
                         checked[m] = true;
-                        matches += 1;
+                        self.score += 1.0;
                     }
                 } 
             }
         }
-        let total = self.order.len() * soup.len();
-        self.score = ((matches / total) * 100) as f32;
-
         return self.score;
     }
 
@@ -86,10 +82,26 @@ impl Customer {
         return self.total as i32;
     }
 
-    pub fn drawScoreReaction(&mut self) {
-        let anim = animation::get("customer");
-        // if self.score > 1 {
-        //     anim.use_sprite("sadcustomer");
-        // }
+    pub fn drawScoreReaction(&mut self) -> bool {
+        let anim = animation::get("reaction");
+        
+        anim.set_fill_forwards(true);
+
+        let percentage = self.score / self.order.len() as f32;
+        if percentage <= 0.3 {           
+            anim.use_sprite("sadcustomer");
+            anim.set_repeat(1);
+            //sprite!(animation_key = "reaction", default_sprite = "emptycustomer", x = 118, y = 136);
+        } else if percentage > 0.3 && percentage <= 0.7 {
+            anim.use_sprite("neutralcustomer");
+            anim.set_repeat(1);
+            //sprite!(animation_key = "reaction", default_sprite = "emptycustomer", x = 118, y = 136);
+        } else if percentage > 0.7 {
+            anim.use_sprite("happycustomer");
+            anim.set_repeat(1);
+            //sprite!(animation_key = "reaction", default_sprite = "emptycustomer", x = 118, y = 136);
+        } 
+        sprite!(animation_key = "reaction", x = 118, y = 136);
+        return anim.done();
     }
 }

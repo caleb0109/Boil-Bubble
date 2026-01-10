@@ -111,10 +111,9 @@ impl Track {
         let num: u32 = random::between(0,self.ingredList.len() as u32 -1);
         let choice = num as usize;
 
-        match random::between(0,2) {
-            0 => {return self.ingredList[choice].clone()}
-            _ => {return Ingredient::new("empty")}
+        match random::between(0,4) {
+            0 => {return Ingredient::new("empty")}
+            _ => {return self.ingredList[choice].clone()}
         }
-        
     }
 }

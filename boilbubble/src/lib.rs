@@ -39,6 +39,7 @@ struct GameState {
     startDay: bool,
     checked: Vec<bool>,
     endScreen: bool,
+    cusReaction: bool,
 }
 impl GameState {
     pub fn new() -> Self {
@@ -73,6 +74,7 @@ impl GameState {
             startDay: false,
             checked: vec![false; 8],
             endScreen: false,
+            cusReaction: false,
         }
     }
     pub fn update(&mut self) {
@@ -99,9 +101,10 @@ impl GameState {
         sprite!("titlescreen", x = 510, y = 0);
         sprite!("background", x= 0, y = 0);
         sprite!("cauldron", x = 145, y = 148);
+        sprite!("cat", x = 181, y =65);
         sprite!("bowls_lowertrack", x = 0, y = 0);
         sprite!("bowls_uppertrack", x = 0, y = 0);
-        sprite!("cat", x = 181, y =65);
+        
         
         //UI
         
@@ -394,6 +397,9 @@ impl GameState {
                             audio::set_volume("bell", 0.1);
                             self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
                             self.totalScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
+                            //self.reader.customers[self.currCus].drawScoreReaction();
+                            //sprite!("sadcustomer", x = 80, y = 200);
+                            self.cusReaction = true;
                             self.currCus += 1;
                             self.cusTimer = 0;
                             self.soup.soup = Vec::new();
@@ -418,27 +424,29 @@ impl GameState {
                 self.uibuttons[n].draw();
             } else if n == 3 || n == 4 && self.tutorial <= 0{
                 self.uibuttons[n].draw();
-            } 
-            // else if n == 5 && self.tutorial >=2 && !self.endScreen && self.soup.soup.len() == 0 {
-            //     self.uibuttons[n].nonselect();
-            // }
-            else if n == 5 && self.tutorial >=2 && !self.endScreen {
+            } else if n == 5 && self.tutorial >=2 && !self.endScreen && self.soup.soup.len() == 0 {
+                self.uibuttons[n].nonselect();
+            } else if n == 5 && self.tutorial >=2 && !self.endScreen{
                 self.uibuttons[n].draw();
             } else {
                 self.uibuttons[n].tempDraw(self.uibuttons[n].text.as_str());
             }
             
         }
+        
 
-        if self.cusTimer == 25 {
-            self.currCus += 1;
-            self.cusTimer = 0;
+        //customer reaction anims
+        if self.cusReaction == true {
+            self.reader.customers[self.currCus-1].drawScoreReaction();
+            if self.reader.customers[self.currCus-1].drawScoreReaction() {
+                self.cusReaction = false;
+            }
+            log!("{}", self.reader.customers[self.currCus-1].drawScoreReaction());
         }
 
         let t = time::tick();    
-        log!("{}", self.soup.soup.len());
 
-        //customer reaction anims
+        
 
 
         
@@ -466,7 +474,6 @@ impl GameState {
             //text!("Order: {:?}", self.reader.customers[self.currCus].order[0].ingredType; font = "TENPIXELS", x = 30, y = 140);
             //text!("{:?}", self.reader.customers[self.currCus].order[1].ingredType; font = "TENPIXELS", x = 30, y = 150);
             //text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
-
             text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
             self.reader.customers[self.currCus].createOrder(self.cusTimer, self.day);
         }
@@ -478,7 +485,7 @@ impl GameState {
         let mut offset = 98;
         for n in 0..self.soup.soup.len() {     
             offset += 14;       
-            text!("{}", self.soup.soup[n].name; x = 28, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
+            text!("{}", self.soup.soup[n].name; x = 33, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
         }
         
 

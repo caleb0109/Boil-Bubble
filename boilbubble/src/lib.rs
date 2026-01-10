@@ -307,7 +307,7 @@ impl GameState {
                 self.uibuttons[n].action = false;
             } else if !self.endScreen && n == 0 && self.tutorial >= 2{
                 self.uibuttons[n].action = false;
-            } else if !self.endScreen && n == 5 && self.tutorial <= 3{
+            } else if !self.endScreen && n == 5 && self.tutorial <= 2{
                 self.uibuttons[n].action = false;
             }
                     //if pressed, goes to next day, resets all track positions, empties soup, and sets soup limit
@@ -394,7 +394,7 @@ impl GameState {
             // else if n == 5 && self.tutorial >=2 && !self.endScreen && self.soup.soup.len() == 0 {
             //     self.uibuttons[n].nonselect();
             // }
-            else if n == 5 && self.tutorial >=2 && !self.endScreen{
+            else if n == 5 && self.tutorial >=2 && !self.endScreen {
                 self.uibuttons[n].draw();
             }
             

@@ -88,8 +88,8 @@ impl Customer {
 
     pub fn drawScoreReaction(&mut self) {
         let anim = animation::get("customer");
-        // if self.score > 1 {
-        //     anim.use_sprite("sadcustomer");
-        // }
+         if self.score > 1.0 {
+             anim.use_sprite("sadcustomer");
+        }
     }
 }

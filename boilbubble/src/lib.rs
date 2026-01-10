@@ -176,6 +176,7 @@ impl GameState {
             }
 
 
+
             
             //if ingredient thats being held is hovering over the soup box and the mouse was just released
             //then it will add the ingredient that was being held to the soup and set the
@@ -278,6 +279,33 @@ impl GameState {
             }
             //yPos += 10.0;
             //text!("ingred: {}", self.tList.ingredPos1[n].1.name; x = 0, y = yPos);
+        }
+
+        //prints out ingredient name when hovering over ingredient
+        //have to do it in separate loop to avoid the textbox from being printed
+        //too early and being overlapped by other ingredients
+        for n in 0..self.trackPrint {
+            if self.tList.ingredPos1[n].0.hover(self.tList.ingredPos1[n].0.hitbox, x, y) && self.tList.ingredPos1[n].1.name != "empty" {
+                rect!(x = self.tList.ingredPos1[n].0.hitbox.0 + 55.0, 
+                    y = self.tList.ingredPos1[n].0.hitbox.1 - 10.0, 
+                    w = self.tList.ingredPos1[n].1.name.len() as f32 * 6.0 + 26.5,
+                    h = 20.0,
+                    border_size = 1,
+                    border_radius = 4,
+                    border_color = 0x000000ff,
+                    );
+                text!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x000000ff);
+            } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && self.tList.ingredPos2[n].1.name != "empty" {
+                rect!(x = self.tList.ingredPos2[n].0.hitbox.0 + 55.0, 
+                    y = self.tList.ingredPos2[n].0.hitbox.1 - 10.0, 
+                    w = self.tList.ingredPos2[n].1.name.len() as f32 * 6.0 + 26.5,
+                    h = 20.0,
+                    border_size = 1,
+                    border_radius = 4,
+                    border_color = 0x000000ff,
+                    );
+                text!(&self.tList.ingredPos2[n].1.name, x = self.tList.ingredPos2[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos2[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x000000ff);
+            }
         }
 
         if self.tutorial == 0 && self.day == 0 {
@@ -396,6 +424,8 @@ impl GameState {
             // }
             else if n == 5 && self.tutorial >=2 && !self.endScreen {
                 self.uibuttons[n].draw();
+            } else {
+                self.uibuttons[n].tempDraw(self.uibuttons[n].text.as_str());
             }
             
         }

@@ -30,8 +30,9 @@ struct GameState {
     currCus: usize,
     cusCheck: bool,
     cameraPos: (i32,i32),
-    timer: usize,
     cusTimer: usize,
+    cusLim: usize,
+    timerSpeed: f32,
     tutorial: usize,
     timeStamp: usize,
     totalScore: i32,
@@ -63,8 +64,9 @@ impl GameState {
             currCus: 0,
             cusCheck: false,
             cameraPos: (765,143),
-            timer: 0,
             cusTimer: 0,
+            cusLim: 24,
+            timerSpeed: 1.0,
             tutorial: 0,
             timeStamp: time::tick(),
             totalScore: 0,
@@ -74,6 +76,25 @@ impl GameState {
         }
     }
     pub fn update(&mut self) {
+
+        match self.day {
+            3 => {
+                //20 seconds
+                self.timerSpeed = 1.2;
+                self.cusLim = 20;
+            }
+            5 => {
+                //18 seconds
+                self.timerSpeed = 1.35;
+                self.cusLim = 18;
+            }
+            8 => {
+                //16 seconds
+                self.timerSpeed = 1.5;
+                self.cusLim = 16;
+            }
+            _ => {}
+        }
         //sprites that cannot be interacted with
         sprite!("titlescreen", x = 510, y = 0);
         sprite!("background", x= 0, y = 0);
@@ -83,9 +104,20 @@ impl GameState {
         sprite!("cat", x = 181, y =65);
         
         //UI
-        sprite!("list", x = 4, y = 88);
+        
         sprite!("borders", x = 0, y = 0);
-        sprite!("customer_speech", x = 59, y = 266);
+        
+        //timer
+        let timer_anim = animation::get("timer");
+        timer_anim.use_sprite("timer");
+
+        if self.day > 0 && !self.cusCheck{
+            
+            sprite!(animation_key = "timer", x = 444, y = 80);
+            timer_anim.set_speed(self.timerSpeed);
+            sprite!("customer_speech", x = 59, y = 266);
+            sprite!("list", x = 4, y = 88);
+        } 
 
         if !audio::is_playing("boil_and_bubble") {
             audio::play("boil_and_bubble");
@@ -94,11 +126,7 @@ impl GameState {
 
         self.uibuttons[1].draw();
        
-        //timer
-        let timer_anim = animation::get("timer");
-        timer_anim.use_sprite("timer");
-        sprite!(animation_key = "timer", x = 444, y = 80);
-        timer_anim.set_speed(0.4);
+        
 
         camera::set_xy(self.cameraPos.0, self.cameraPos.1);
 
@@ -108,8 +136,7 @@ impl GameState {
         let(mx, my) = m.xy();
         let x = mx as f32;
         let y = my as f32;
-        //random checker
-        let mut yPos = 0.0;
+
         //for every 5/6 of a second that pass, the next item on the track will appear
         //is not perfect for sure, but visually works for now
         //will look into further ways to optimize
@@ -117,11 +144,7 @@ impl GameState {
             self.trackPrint += 1;
         }
 
-        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.timer < 60{
-            self.timer += 1;
-        }
-
-        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.cusTimer <= 15{
+        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.cusTimer <= self.cusLim{
             self.cusTimer += 1;
         }
 
@@ -158,7 +181,8 @@ impl GameState {
             //then it will add the ingredient that was being held to the soup and set the
             //ingredient on the track to empty/nothing
             if self.tList.ingredPos1[n].0.hover(self.tList.ingredPos1[n].0.hitbox, x, y) && 
-               self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released(){
+               self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released() &&
+               self.tList.ingredPos1[n].1.name != "empty" {
                 self.soup.addIngredients(self.tList.ingredPos1[n].1.clone());
                 audio::play("splash");
                 audio::set_volume("splash", 0.1);
@@ -168,7 +192,8 @@ impl GameState {
                 self.tList.ingredPos1[n].0.action = false;
                 self.ingredHold = false;
             } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && 
-               self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released(){
+               self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released() && 
+               self.tList.ingredPos1[n].1.name != "empty"{
                 self.soup.addIngredients(self.tList.ingredPos2[n].1.clone());
                 audio::play("splash");
                 audio::set_volume("splash", 0.1);
@@ -198,7 +223,10 @@ impl GameState {
             //OR if the player is holding an ingredient, but isn't interacting with an ingredient
             //then sets that specific ingredient's position back to the track position while making sure
             //that ingredient cannot be held/interacted with because the player is already holding one
-            if self.tList.ingredPos1[n].0.action && self.ingredHold && self.ingredCheck != n 
+            
+            // BUG IN HERE LOOK AT THIS WHEN YOU CAN
+
+            if self.tList.ingredPos1[n].0.action && self.ingredHold && self.ingredCheck != n
             || !self.ingredHold 
             || !self.tList.ingredPos1[n].0.action && self.ingredHold{
                 self.tList.ingredPos1[n].0.action = false;
@@ -206,7 +234,7 @@ impl GameState {
                 self.tList.ingredPos1[n].0.hitbox.1 = self.tList.trackPos1[n].1;
             }
             //ditto for the second track
-            if self.tList.ingredPos2[n].0.action && self.ingredHold && self.ingredCheck != n 
+            if self.tList.ingredPos2[n].0.action && self.ingredHold && self.ingredCheck != n
             || !self.ingredHold 
             || !self.tList.ingredPos2[n].0.action && self.ingredHold{
                 self.tList.ingredPos2[n].0.action = false;
@@ -259,10 +287,15 @@ impl GameState {
         }
 
         if self.endScreen {
+            let mut yOffset = 0;
             sprite!("scorescreen", x = 0, y = 0);
-            text!("Customer Served!", font = "TENPIXELS", x = 180, y = 130);
-            text!("Score: {}", self.totalScore; font = "TENPIXELS", x = 220, y = 150);
-            text!("Time: {}", self.timer; font = "TENPIXELS", x = 220, y = 165);       
+            text!("Customer Served!", font = "TENPIXELS", x = 180, y = 90);
+            for n in 0..self.reader.customers.len() {
+                let scoreText = format!("{}: {}/{} = {} pts", &self.reader.customers[n].cusName, self.reader.customers[n].score, self.reader.customers[n].order.len(), self.reader.customers[n].total);
+                yOffset += 15;
+                text!(&scoreText, font = "TENPIXELS", x = 180, y = 105 + yOffset);
+            }       
+            text!("Total Score: {}", self.totalScore; font = "TENPIXELS", x = 180, y = 180);
         }
 
         //check to see if day continue button is pressed or not
@@ -291,7 +324,7 @@ impl GameState {
                         self.trackPrint = 0;
                         self.currCus = 0;
                         self.cusCheck = false;
-                        self.timer = 0;
+                        self.cusTimer = 0;
                         self.totalScore = 0;
                         self.endScreen = false;
                         self.startDay = true;
@@ -328,23 +361,20 @@ impl GameState {
                     }
                     5 => {
                         
-                        if self.timer != 60 && self.soup.soup.len() > 0{
+                        if self.cusTimer != self.cusLim && self.soup.soup.len() > 0{
                             audio::play("bell");
                             audio::set_volume("bell", 0.1);
                             self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
+                            self.totalScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
                             self.currCus += 1;
-                            self.timer = 0;
-                            self.soup.soup = Vec::new();
                             self.cusTimer = 0;
+                            self.soup.soup = Vec::new();
+                            timer_anim.restart();
                         }
                         
                         if self.currCus != self.reader.custNum {
                             self.soup.limit = self.reader.customers[self.currCus].order.len();
                         } else {
-                            
-                            for n in 0..self.reader.customers.len() {
-                                self.totalScore += self.reader.customers[n].calculateScore(self.cusTimer);
-                            }
                             self.endScreen = true;
                             self.cusCheck = true;
                         }
@@ -370,7 +400,23 @@ impl GameState {
         log!("{}", self.cusTimer);
 
         
-        
+        if self.cusTimer == self.cusLim {
+            if self.currCus != self.reader.custNum - 1 {
+                // audio::play("bell");
+                // audio::set_volume("bell", 0.1);
+                //maybe new audio? steps walking away lmao
+                self.totalScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
+                self.currCus += 1;
+                self.soup.soup = Vec::new();
+                self.cusTimer = 0;
+                timer_anim.restart();
+            } else {
+                self.endScreen = true;
+                self.cusCheck = true;
+            }
+            
+            
+        }
         
 
         if self.day > 0 && !self.cusCheck{
@@ -380,7 +426,7 @@ impl GameState {
             //text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
 
             text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
-            self.reader.customers[self.currCus].createOrder(self.cusTimer);
+            self.reader.customers[self.currCus].createOrder(self.cusTimer, self.day);
         }
         let mut offsetdashes = 98;
         for n in 0..self.soup.limit {

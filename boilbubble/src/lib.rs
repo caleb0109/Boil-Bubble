@@ -53,8 +53,8 @@ impl GameState {
                 UIButton::new("soup", (145.0, 148.0, 210.0, 50.0), false),
                 UIButton::new("soupDump", (140.0, 75.0, 8.0, 8.0), false),
                 UIButton::new("start", (582.0, 174.0, 100.0, 20.0), false),
-                UIButton::new("continue", (195.0,230.0, 100.0, 20.0), false),
-                UIButton::new("serve", (195.0,230.0, 100.0, 20.0), false),
+                UIButton::new("continue", (195.0, 230.0, 100.0, 20.0), false),
+                UIButton::new("serve", (26.0, 174.0, 94.0, 18.0), false),
             ],
             soup: Soup::new(),
             reader: reader::Reader::new(),
@@ -117,7 +117,7 @@ impl GameState {
             self.timer += 1;
         }
 
-        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.cusTimer <= 15{
+        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.cusTimer <= 25{
             self.cusTimer += 1;
         }
 
@@ -316,14 +316,16 @@ impl GameState {
                     }
                     5 => {
                         
-                        if self.timer != 60 && self.soup.soup.len() > 0{
+                        if self.timer != 60 && self.soup.soup.len() > 0 {
                             audio::play("bell");
                             audio::set_volume("bell", 0.1);
                             self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
                             self.currCus += 1;
-                            self.timer = 0;
+                            //self.timer = 0;
                             self.soup.soup = Vec::new();
                             self.cusTimer = 0;
+                            //log!("{}", self.reader.customers[self.currCus].score);
+                            log!("hi");
                         }
                         
                         if self.currCus != self.reader.custNum {
@@ -348,14 +350,26 @@ impl GameState {
                 self.uibuttons[n].draw();
             } else if n == 3 || n == 4 && self.tutorial <= 0{
                 self.uibuttons[n].draw();
-            } else if n == 5 && self.tutorial >=2 && !self.endScreen{
-                self.uibuttons[n].tempDraw(&self.uibuttons[n].text.as_str());
+            } 
+            // else if n == 5 && self.tutorial >=2 && !self.endScreen && self.soup.soup.len() == 0 {
+            //     self.uibuttons[n].nonselect();
+            // }
+            else if n == 5 && self.tutorial >=2 && !self.endScreen{
+                self.uibuttons[n].draw();
             }
             
         }
 
+        if self.cusTimer == 25 {
+            self.currCus += 1;
+            self.cusTimer = 0;
+        }
+
         let t = time::tick();    
-        log!("{}", self.cusTimer);
+        log!("{}", self.soup.soup.len());
+
+        //customer reaction anims
+
 
         
         
@@ -378,7 +392,7 @@ impl GameState {
         let mut offset = 98;
         for n in 0..self.soup.soup.len() {     
             offset += 14;       
-            text!("-{}", self.soup.soup[n].name; x = 28, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
+            text!("{}", self.soup.soup[n].name; x = 28, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
         }
         
 

@@ -26,16 +26,16 @@ impl Customer {
         text!(&self.orderDesc, x = 67, y = 268, font = "TENPIXELS", color = 0x2d1e1eff);
         //self.patienceTime = 15 - timer;
 
-        if timer <= 5 {
+        if timer <= 10 {
             let cusSprite = format!("customers#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
-        } else if timer > 5 && timer <= 8 {
+        } else if timer > 10 && timer <= 15 {
             let cusSprite = format!("customers_patience1#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
-        } else if timer > 8 && timer <= 12 {
+        } else if timer > 15 && timer <= 20 {
             let cusSprite = format!("customers_patience2#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
-        } else if timer > 12 && timer <= 16 {
+        } else if timer > 20 && timer <= 25 {
             let cusSprite = format!("customers_patience3#{}", &self.cusName);
             sprite!(&cusSprite, x = 0, y  = 261);
         }
@@ -47,17 +47,21 @@ impl Customer {
             self.score = 0;
             return self.score;
         }
+        let mut matches = 0;
         let mut checked: Vec<bool> = vec![false; self.order.len()];
         for n in 0..self.order.len() {
             for m in 0..soup.len() {
                 if !checked[m] {
                     if self.order[n].ingredType == soup[m].ingredType {
                         checked[m] = true;
-                        self.score += 1;
+                        matches += 1;
                     }
                 } 
             }
         }
+        let total = self.order.len() * soup.len();
+        self.score = ((matches / total) * 100) as i32;
+
         return self.score;
     }
 
@@ -69,5 +73,12 @@ impl Customer {
         let ingredScore = (self.score as f32 / self.order.len() as f32) * 80.0;
         let timeScore = ((15 - cusTimer) as f32 / 15.0) * 20.0;
         return (ingredScore + timeScore) as i32;
+    }
+
+    pub fn drawScoreReaction(&mut self) {
+        let anim = animation::get("customer");
+        if self.score > 1 {
+            anim.use_sprite("sadcustomer");
+        }
     }
 }

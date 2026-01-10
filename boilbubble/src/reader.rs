@@ -21,7 +21,7 @@ pub struct Reader {
 //4) order description
 //5) amount of ingredients that should be in the order
 //6) ingredient names for the order
-//7)if multiple customers, repeat steps 3-6 for each customer
+//7) if multiple customers, repeat steps 3-6 for each customer
 //8) ingredient name for the ingredient list used for day
 impl Reader {
     pub fn new() -> Self {

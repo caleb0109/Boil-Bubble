@@ -31,10 +31,10 @@ impl Customer {
         let time = timer as f32;
         let mut gap = 0.0;
 
-        if day > 0 && day <= 2 { gap = 6.0; }
-        else if day > 2 && day <= 4{ gap = 5.0; }
-        else if day > 4 && day <= 7 { gap = 4.5; }
-        else if day >= 8 { gap = 4.0; }
+        if day > 0 && day <= 4 { gap = 6.0; }
+        else if day > 4 && day <= 7{ gap = 5.0; }
+        else if day > 7 && day <= 10 { gap = 4.5; }
+        else if day >= 11 { gap = 4.0; }
 
         if time < gap {
             let cusSprite = format!("customers#{}", &self.cusName);

@@ -80,17 +80,17 @@ impl GameState {
     pub fn update(&mut self) {
 
         match self.day {
-            3 => {
+            5 => {
                 //20 seconds
                 self.timerSpeed = 1.2;
                 self.cusLim = 20;
             }
-            5 => {
+            8 => {
                 //18 seconds
                 self.timerSpeed = 1.35;
                 self.cusLim = 18;
             }
-            8 => {
+            11 => {
                 //16 seconds
                 self.timerSpeed = 1.5;
                 self.cusLim = 16;
@@ -265,7 +265,7 @@ impl GameState {
             }
             //if the track item reaches the end of the screen, then reset it to start
             //if the track item is not at the end of the screen, draws the bowl and ingredient
-            if !self.tList.trackPos1[n].2 {
+            if !self.tList.trackPos1[n].2 && !self.endScreen{
                 sprite!("bowl", x = self.tList.ingredPos1[n].0.hitbox.0, y = self.tList.ingredPos1[n].0.hitbox.1);
                 sprite!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 11.0);
             } else if self.tList.trackPos1[n].2 {
@@ -274,7 +274,7 @@ impl GameState {
                 self.tList.trackPos1[n].2 = false;
                 self.tList.trackPos1[n].0 = 0.0;
             }
-            if !self.tList.trackPos2[n].2 {
+            if !self.tList.trackPos2[n].2 && !self.endScreen{
                 sprite!("bowl", x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1);
                 sprite!(&self.tList.ingredPos2[n].1.name, x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1 - 11.0);
             } else if self.tList.trackPos2[n].2 {
@@ -346,6 +346,8 @@ impl GameState {
                 self.uibuttons[n].action = false;
             } else if !self.endScreen && n == 5 && self.tutorial <= 2{
                 self.uibuttons[n].action = false;
+            } else if self.endScreen && n != 0 {
+                self.uibuttons[n].action = false;
             }
                     //if pressed, goes to next day, resets all track positions, empties soup, and sets soup limit
                     //resetting will all occur here when going to next day for now
@@ -357,7 +359,9 @@ impl GameState {
                         self.day += 1;
                         self.tutorial += 1;
                         self.reader.reset();
+                        log!("{}", self.day);
                         self.reader.customersDay(self.day);
+                        log!("hi");
                         self.uibuttons[0].action = false;
                         self.trackPrint = 0;
                         self.currCus = 0;
@@ -381,6 +385,7 @@ impl GameState {
                             self.tList.ingredPos1[n].1 = Ingredient::new( "empty");
                             self.tList.ingredPos2[n].1 = Ingredient::new("empty");
                         }
+                        
                         timer_anim.restart();
                         
                         //log!("{}", self.reader.customers[self.currCus].cusName )

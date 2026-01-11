@@ -96,6 +96,8 @@ impl Reader {
         self.current_line += 1;
         self.ingredNum = self.lines[self.current_line].parse::<usize>().unwrap();
         self.current_line += 1;
+        
+        log!("hi");
 
         for x in 0..self.custNum {
             let name = self.lines[self.current_line].clone();
@@ -105,6 +107,7 @@ impl Reader {
 
             let orderSize = self.lines[self.current_line].parse::<usize>().unwrap();
             self.current_line += 1;
+
 
             let mut order: Vec<Ingredient> = Vec::new();
 

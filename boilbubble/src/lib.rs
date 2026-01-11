@@ -195,9 +195,10 @@ impl GameState {
                 self.tList.ingredPos1[n].1.setType("empty");
                 self.tList.ingredPos1[n].0.action = false;
                 self.ingredHold = false;
-            } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && 
+            } 
+            if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && 
                self.uibuttons[1].hover(self.uibuttons[1].hitbox, x, y) && m.just_released() && 
-               self.tList.ingredPos1[n].1.name != "empty"{
+               self.tList.ingredPos2[n].1.name != "empty"{
                 self.soup.addIngredients(self.tList.ingredPos2[n].1.clone());
                 audio::play("splash");
                 audio::set_volume("splash", 0.1);
@@ -215,7 +216,8 @@ impl GameState {
                 self.tList.ingredPos2[n].0.action = false;
                 self.ingredHold = true;
                 self.ingredCheck = n;
-            } else if self.tList.ingredPos2[n].0.action && !self.ingredHold{
+            } 
+            if self.tList.ingredPos2[n].0.action && !self.ingredHold{
                 self.tList.ingredPos1[n].0.action = false;
                 self.ingredHold = true;
                 self.ingredCheck = n;
@@ -250,6 +252,7 @@ impl GameState {
             //if the pointer releases the ingredient, ingredient is not active
             if m.just_released() {
                 self.ingredHold = false;
+                self.ingredCheck = 0;
                 self.tList.ingredPos1[n].0.action = false;
                 self.tList.ingredPos2[n].0.action = false;
             }
@@ -331,6 +334,9 @@ impl GameState {
 
         //check to see if day continue button is pressed or not
         for n in 0..self.uibuttons.len() {
+            if n == 2 {
+                continue;
+            }
             let dayPress = self.uibuttons[n].check(select);
             if self.tutorial == 0 && n == 0 {
                 self.uibuttons[n].action = false;
@@ -350,6 +356,7 @@ impl GameState {
                     0 => {
                         self.day += 1;
                         self.tutorial += 1;
+                        self.reader.reset();
                         self.reader.customersDay(self.day);
                         self.uibuttons[0].action = false;
                         self.trackPrint = 0;
@@ -359,6 +366,7 @@ impl GameState {
                         self.totalScore = 0;
                         self.endScreen = false;
                         self.startDay = true;
+                        self.checked = vec![false; 8];
                         self.soup.limit = self.reader.customers[0].order.len();
                         self.soup.soup = Vec::new();
                         self.tList.dayIngredients(self.reader.ingredList.clone());
@@ -379,7 +387,7 @@ impl GameState {
                     }
                     1 => {continue;}
                     2 => {
-                        self.soup.dumpSoup();
+                        //self.soup.dumpSoup();
                         self.uibuttons[2].action = false;
                     }
                     3 => {
@@ -428,8 +436,6 @@ impl GameState {
                 self.uibuttons[n].nonselect();
             } else if n == 5 && self.tutorial >=2 && !self.endScreen{
                 self.uibuttons[n].draw();
-            } else {
-                self.uibuttons[n].tempDraw(self.uibuttons[n].text.as_str());
             }
             
         }
@@ -475,6 +481,7 @@ impl GameState {
             //text!("{:?}", self.reader.customers[self.currCus].order[1].ingredType; font = "TENPIXELS", x = 30, y = 150);
             //text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
             text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
+            text!("Day: {}", self.day; x = 10, y = 5, font = "TENPIXELS");
             self.reader.customers[self.currCus].createOrder(self.cusTimer, self.day);
         }
         let mut offsetdashes = 98;
@@ -487,6 +494,7 @@ impl GameState {
             offset += 14;       
             text!("{}", self.soup.soup[n].name; x = 33, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
         }
+        
         
 
     }

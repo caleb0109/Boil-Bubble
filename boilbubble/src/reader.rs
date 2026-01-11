@@ -39,7 +39,52 @@ impl Reader {
         match day {
             1 => {
                 let n = self.lines.iter().position(|line| line == "day1");
-                self.current_line = n.unwrap() + 1;
+                self.current_line = n.unwrap_or(0) + 1;
+                self.updateData();
+            }
+            2 => {
+                let n = self.lines.iter().position(|line| line == "day2");
+                self.current_line = n.unwrap_or(0) + 1;
+                self.updateData();
+            }
+            3 => {
+                let n = self.lines.iter().position(|line| line == "day3");
+                self.current_line = n.unwrap_or(0) + 1;
+                self.updateData();
+            }
+            4 => {
+                let n = self.lines.iter().position(|line| line == "day4");
+                self.current_line = n.unwrap_or(0) + 1;
+                self.updateData();
+            }
+            5 => {
+                let n = self.lines.iter().position(|line| line == "day5");
+                self.current_line = n.unwrap_or(0) + 1;
+                self.updateData();
+            }
+            6 => {
+                let n = self.lines.iter().position(|line| line == "day6");
+                self.current_line = n.unwrap_or(0) + 1;
+                self.updateData();
+            }
+            7 => {
+                let n = self.lines.iter().position(|line| line == "day7");
+                self.current_line = n.unwrap_or(0) + 1;
+                self.updateData();
+            }
+            8 => {
+                let n = self.lines.iter().position(|line| line == "day8");
+                self.current_line = n.unwrap_or(0) + 1;
+                self.updateData();
+            }
+            9 => {
+                let n = self.lines.iter().position(|line| line == "day9");
+                self.current_line = n.unwrap_or(0) + 1;
+                self.updateData();
+            }
+            10 => {
+                let n = self.lines.iter().position(|line| line == "day10");
+                self.current_line = n.unwrap_or(0) + 1;
                 self.updateData();
             }
             _ => {}
@@ -81,5 +126,13 @@ impl Reader {
             self.ingredList[x].setType(&self.lines[self.current_line]);
             self.current_line += 1;
         }
+    }
+
+    pub fn reset(&mut self) {
+        self.current_line = 0;
+        self.custNum = 0;
+        self.ingredNum = 0;
+        self.customers = Vec::new();
+        self.ingredList = Vec::new();
     }
 }

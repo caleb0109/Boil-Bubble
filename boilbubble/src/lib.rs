@@ -35,10 +35,12 @@ struct GameState {
     timerSpeed: f32,
     tutorial: usize,
     timeStamp: usize,
+    dayScore: i32,
     totalScore: i32,
     startDay: bool,
     checked: Vec<bool>,
     endScreen: bool,
+    scoreSwitch: bool,
     cusReaction: bool,
     finalScore: bool
 }
@@ -71,10 +73,12 @@ impl GameState {
             timerSpeed: 1.0,
             tutorial: 0,
             timeStamp: time::tick(),
+            dayScore: 0,
             totalScore: 0,
             startDay: false,
             checked: vec![false; 8],
             endScreen: false,
+            scoreSwitch: false,
             cusReaction: false,
             finalScore: false,
         }
@@ -125,8 +129,6 @@ impl GameState {
         }
 
         self.uibuttons[1].draw();
-       
-        
 
         camera::set_xy(self.cameraPos.0, self.cameraPos.1);
 
@@ -297,7 +299,7 @@ impl GameState {
                     border_radius = 4,
                     border_color = 0x000000ff,
                     );
-                text!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x000000ff);
+                text!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x2d1e1eff);
             } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && self.tList.ingredPos2[n].1.name != "empty" {
                 rect!(x = self.tList.ingredPos2[n].0.hitbox.0 + 55.0, 
                     y = self.tList.ingredPos2[n].0.hitbox.1 - 10.0, 
@@ -307,7 +309,7 @@ impl GameState {
                     border_radius = 4,
                     border_color = 0x000000ff,
                     );
-                text!(&self.tList.ingredPos2[n].1.name, x = self.tList.ingredPos2[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos2[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x000000ff);
+                text!(&self.tList.ingredPos2[n].1.name, x = self.tList.ingredPos2[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos2[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x2d1e1eff);
             }
         }
 
@@ -320,13 +322,32 @@ impl GameState {
         if self.endScreen {
             let mut yOffset = 0;
             sprite!("scorescreen", x = 0, y = 0);
-            text!("Customer Served!", font = "TENPIXELS", x = 180, y = 90);
-            for n in 0..self.reader.customers.len() {
-                let scoreText = format!("{}: {}/{} = {} pts", &self.reader.customers[n].cusName, self.reader.customers[n].score, self.reader.customers[n].order.len(), self.reader.customers[n].total);
-                yOffset += 15;
-                text!(&scoreText, font = "TENPIXELS", x = 180, y = 105 + yOffset);
-            }       
-            text!("Total Score: {}", self.totalScore; font = "TENPIXELS", x = 180, y = 180);
+            text!("Customer Served!", font = "TENPIXELS", x = 180, y = 90, color = 0x2d1e1eff);
+            if self.reader.customers.len() <= 4 {
+                for n in 0..self.reader.customers.len() {
+                    let scoreText = format!("{}: {}/{} = {} pts", &self.reader.customers[n].cusName, self.reader.customers[n].score, self.reader.customers[n].order.len(), self.reader.customers[n].total);
+                    yOffset += 15;
+                    text!(&scoreText, font = "TENPIXELS", x = 180, y = 105 + yOffset, color = 0x2d1e1eff);
+                } 
+            }
+            if time::tick() % 120 == 0{
+                self.scoreSwitch = !self.scoreSwitch;
+            } 
+            if self.scoreSwitch && self.reader.customers.len() > 4{
+                for n in 4..self.reader.customers.len() {
+                    let scoreText = format!("{}: {}/{} = {} pts", &self.reader.customers[n].cusName, self.reader.customers[n].score, self.reader.customers[n].order.len(), self.reader.customers[n].total);
+                    yOffset += 15;
+                    text!(&scoreText, font = "TENPIXELS", x = 180, y = 105 + yOffset, color = 0x2d1e1eff);
+                } 
+            } else if !self.scoreSwitch && self.reader.customers.len() > 4{
+                for n in 0..4 {
+                    let scoreText = format!("{}: {}/{} = {} pts", &self.reader.customers[n].cusName, self.reader.customers[n].score, self.reader.customers[n].order.len(), self.reader.customers[n].total);
+                    yOffset += 15;
+                    text!(&scoreText, font = "TENPIXELS", x = 180, y = 105 + yOffset, color = 0x2d1e1eff);
+                } 
+            }
+                  
+            text!("Total Score: {}", self.dayScore; font = "TENPIXELS", x = 180, y = 180, color = 0x2d1e1eff);
         }
 
         if self.day == 10 && self.finalScore == true {
@@ -368,14 +389,14 @@ impl GameState {
                         self.day += 1;
                         self.tutorial += 1;
                         self.reader.reset();
-                        log!("{}", self.day);
                         self.reader.customersDay(self.day);
                         self.uibuttons[0].action = false;
                         self.trackPrint = 0;
                         self.currCus = 0;
                         self.cusCheck = false;
                         self.cusTimer = 0;
-                        self.totalScore = 0;
+                        self.dayScore = 0;
+                        self.cusReaction = false;
                         self.endScreen = false;
                         self.startDay = true;
                         self.checked = vec![false; 8];
@@ -395,7 +416,6 @@ impl GameState {
                         }
                         
                         timer_anim.restart();
-                        
                         //log!("{}", self.reader.customers[self.currCus].cusName )
                     }
                     1 => {continue;}
@@ -417,7 +437,8 @@ impl GameState {
                             audio::play("bell");
                             audio::set_volume("bell", 0.1);
                             self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
-                            self.totalScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
+                            self.dayScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
+                            self.totalScore += self.dayScore;
                             //self.reader.customers[self.currCus].drawScoreReaction();
                             //sprite!("sadcustomer", x = 80, y = 200);
                             self.cusReaction = true;
@@ -453,7 +474,6 @@ impl GameState {
             
         }
         
-
         //customer reaction anims
         if self.cusReaction == true {
             self.reader.customers[self.currCus-1].drawScoreReaction();
@@ -462,19 +482,14 @@ impl GameState {
             }
             log!("{}", self.reader.customers[self.currCus-1].drawScoreReaction());
         }
-
-        let t = time::tick();    
-
-        
-
-
-        
+   
         if self.cusTimer == self.cusLim {
             if self.currCus != self.reader.custNum - 1 {
                 // audio::play("bell");
                 // audio::set_volume("bell", 0.1);
                 //maybe new audio? steps walking away lmao
-                self.totalScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
+                self.dayScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
+                self.totalScore += self.dayScore;
                 self.currCus += 1;
                 self.soup.soup = Vec::new();
                 self.cusTimer = 0;
@@ -483,8 +498,6 @@ impl GameState {
                 self.endScreen = true;
                 self.cusCheck = true;
             }
-            
-            
         }
         
 

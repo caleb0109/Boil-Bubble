@@ -46,7 +46,7 @@ apple
 salt
 
 day3
-3
+4
 6
 BEAR
 Sweet... Sour... With meat...
@@ -65,6 +65,13 @@ I loooove fruit! I want a sweet, fruit soup.
 Sweet
 Fruity
 Fruity
+MOUSE
+I shouldn't, but sweeeeeet and a tad sour please!!
+4
+Sweet
+Sweet
+Sweet
+Sour
 meat
 sugar
 lemon
@@ -149,7 +156,7 @@ meat
 fish
 
 day6
-4
+5
 14
 CAT
 I want a fruity soup that's a bit tart!
@@ -177,6 +184,13 @@ Earthy
 Earthy
 Earthy
 Earthy
+OX
+4
+Spicy is the game! And a dash of salt!
+Spicy
+Spicy
+Spicy
+Saltly
 sugar
 chocolate
 lemon
@@ -193,7 +207,7 @@ meat
 cheese
 
 day7
-4
+5
 16
 MOUSE
 I'm off my diet! Something super sweet, please!
@@ -217,10 +231,9 @@ Savory
 Spicy
 OX
 I need something warm and comforting!!!
-5
+4
 Spicy
 Salty
-Thick
 Earthy
 Savory
 sugar
@@ -245,8 +258,7 @@ day8
 16
 BUNNY
 I want a sweeeet soup! Maybe a little sour?
-5
-Sweet
+4
 Sweet
 Sweet
 Sweet
@@ -260,16 +272,14 @@ Earthy
 Earthy
 CAT
 I want a jammy soup! Sweet, fruity, and tart!
-5
+4
 Fruity
 Fruity
-Sweet
 Sweet
 Sour
 FOX
 SALT! SALT! SALT! SALT! SALT!
-5
-Salty
+4
 Salty
 Salty
 Salty
@@ -303,45 +313,40 @@ day9
 5
 16
 BEAR
-Spicy... Sweet... Fishy... Earthy... With meat...
+Spicy... Sweet... Earthy... With any kind of meat...
 5
 Spicy
 Sweet
-Savory
 Earthy
 Savory
 KOALA
-I'd like a sugary soup with some fruits and veggies!
-5
-Sweet
+I'd like a soup with some fruits and veggies!
+4
 Fruity
 Fruity
 Earthy
 Earthy
 FROG
 I'm sick of dirt... Maybe something jammy?
-5
-Fruity
+4
 Fruity
 Fruity
 Sour
 Sour
 DUCK
 I'm not feeling great... Got anything for a cold?
-5
+4
 Spicy
-Salty
-Earthy
+Salt
 Earthy
 Savory
 BUNNY
 I really love carrot cake. What can you make me?
-5
+4
 Earthy
 Earthy
 Sweet
 Sweet
-Thick
 sugar
 chocolate
 lemon
@@ -364,42 +369,37 @@ day10
 16
 FOX
 NO MORE SALT... JUST VEGGIES...
-5
-Earthy
+4
 Earthy
 Earthy
 Earthy
 Earthy
 OX
 My mouth's been burning! Can you help?
-5
-Thick
+4
 Thick
 Fruity
 Sweet
 Sweet
 CAT
 I wanna try a little spice! But still jammy!
-5
+4
 Spicy
-Fruity
 Fruity
 Sweet
 Sour
 MOUSE
 I need balance... Sweet but not too sweet!
-5
+4
 Fruity
 Sweet
 Sweet
 Fruity
-Sour
 LION
 I love veggies! I want something warm and filling!
-5
+4
 Earthy
 Earthy
-Thick
 Thick
 Spicy
 sugar

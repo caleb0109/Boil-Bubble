@@ -5,6 +5,7 @@ mod soup;
 mod reader;
 mod customer;
 
+use turbo::text_box::TextBox;
 use turbo::*;
 use turbo::time::tick;
 use track::Track;
@@ -350,9 +351,38 @@ impl GameState {
             text!("Total Score: {}", self.dayScore; font = "TENPIXELS", x = 180, y = 180, color = 0x2d1e1eff);
         }
 
+        //final score screen (stars)
         if self.day == 10 && self.finalScore == true {
             sprite!("finalscore", x = 0, y = 0);
-            
+
+            text_box!("{}", self.totalScore; x = 206, y = 107, w = 98, h = 36, align = "center", font = "TENPIXELS", color = 0x2d1e1eff);
+
+            let xpos_star = 165;
+            let ypos_star = 42;
+
+            let xpos_text = 116;
+            let ypos_text = 147;
+
+            //placeholder score values
+            if self.totalScore == 0 {
+                sprite!("stars#0", x = xpos_star, y = ypos_star);
+                text!("Sorry! You're a 0-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
+            } else if self.totalScore > 0 && self.totalScore <= 1000 {
+                sprite!("stars#1", x = xpos_star, y = ypos_star);
+                text!("Woah! You're a 1-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
+            } else if self.totalScore > 1000 && self.totalScore <= 2000 {
+                sprite!("stars#2", x = xpos_star, y = ypos_star);
+                text!("Woah! You're a 2-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
+            } else if self.totalScore > 2000 && self.totalScore <= 3000 {
+                sprite!("stars#3", x = xpos_star, y = ypos_star);
+                text!("Wow! You're a 3-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
+            } else if self.totalScore > 3000 && self.totalScore <= 4000 {
+                sprite!("stars#4", x = xpos_star, y = ypos_star);
+                text!("Wow! You're a 4-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
+            } else if self.totalScore > 4000 && self.totalScore <= 5000 {
+                sprite!("stars#5", x = xpos_star, y = ypos_star);
+                text!("Congrats! You're a 5-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
+            }
         }
 
         //check to see if day continue button is pressed or not
@@ -475,13 +505,13 @@ impl GameState {
         }
         
         //customer reaction anims
-        if self.cusReaction == true {
-            self.reader.customers[self.currCus-1].drawScoreReaction();
-            if self.reader.customers[self.currCus-1].drawScoreReaction() {
-                self.cusReaction = false;
-            }
-            log!("{}", self.reader.customers[self.currCus-1].drawScoreReaction());
-        }
+        // if self.cusReaction == true {
+        //     self.reader.customers[self.currCus-1].drawScoreReaction();
+        //     if self.reader.customers[self.currCus-1].drawScoreReaction() {
+        //         self.cusReaction = false;
+        //     }
+        //     log!("{}", self.reader.customers[self.currCus-1].drawScoreReaction());
+        // }
    
         if self.cusTimer == self.cusLim {
             if self.currCus != self.reader.custNum - 1 {

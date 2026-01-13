@@ -77,7 +77,6 @@ impl UIButton {
         if self.hover(self.hitbox, x, y) {
             if m.just_pressed(){
                 self.action = true; // Call function local to button
-                text!("Pressed {}", self.text; x = 0, y = 0);
                 return (self.hitbox.0, self.hitbox.1);
             }else if m.pressed() && self.text == "ing" {
                 self.action = true;

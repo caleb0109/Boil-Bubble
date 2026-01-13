@@ -25,7 +25,7 @@ struct GameState {
     trackPrint: usize,
     ingredHold: bool,
     ingredCheck: usize,
-    uibuttons: [UIButton; 6],
+    uibuttons: [UIButton; 7],
     soup: Soup,
     reader: reader::Reader,
     currCus: usize,
@@ -37,11 +37,13 @@ struct GameState {
     tutorial: usize,
     timeStamp: usize,
     dayScore: i32,
+    dayCheck: i32,
     totalScore: i32,
     startDay: bool,
     checked: Vec<bool>,
     endScreen: bool,
     scoreSwitch: bool,
+    redo: bool,
     cusReaction: bool,
     finalScore: bool
 }
@@ -63,6 +65,7 @@ impl GameState {
                 UIButton::new("start", (582.0, 174.0, 100.0, 20.0), false),
                 UIButton::new("continue", (195.0, 230.0, 100.0, 20.0), false),
                 UIButton::new("serve", (26.0, 174.0, 94.0, 18.0), false),
+                UIButton::new("redo", (140.0, 233.0, 100.0, 20.0), false),
             ],
             soup: Soup::new(),
             reader: reader::Reader::new(),
@@ -75,11 +78,13 @@ impl GameState {
             tutorial: 0,
             timeStamp: time::tick(),
             dayScore: 0,
+            dayCheck: 0,
             totalScore: 0,
             startDay: false,
             checked: vec![false; 8],
             endScreen: false,
             scoreSwitch: false,
+            redo: false,
             cusReaction: false,
             finalScore: false,
         }
@@ -291,7 +296,7 @@ impl GameState {
         //have to do it in separate loop to avoid the textbox from being printed
         //too early and being overlapped by other ingredients
         for n in 0..self.trackPrint {
-            if self.tList.ingredPos1[n].0.hover(self.tList.ingredPos1[n].0.hitbox, x, y) && self.tList.ingredPos1[n].1.name != "empty" {
+            if self.tList.ingredPos1[n].0.hover(self.tList.ingredPos1[n].0.hitbox, x, y) && self.tList.ingredPos1[n].1.name != "empty" && !self.endScreen {
                 rect!(x = self.tList.ingredPos1[n].0.hitbox.0 + 55.0, 
                     y = self.tList.ingredPos1[n].0.hitbox.1 - 10.0, 
                     w = self.tList.ingredPos1[n].1.name.len() as f32 * 6.0 + 26.5,
@@ -301,7 +306,7 @@ impl GameState {
                     border_color = 0x000000ff,
                     );
                 text!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x2d1e1eff);
-            } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && self.tList.ingredPos2[n].1.name != "empty" {
+            } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && self.tList.ingredPos2[n].1.name != "empty" && !self.endScreen{
                 rect!(x = self.tList.ingredPos2[n].0.hitbox.0 + 55.0, 
                     y = self.tList.ingredPos2[n].0.hitbox.1 - 10.0, 
                     w = self.tList.ingredPos2[n].1.name.len() as f32 * 6.0 + 26.5,
@@ -347,7 +352,7 @@ impl GameState {
                     text!(&scoreText, font = "TENPIXELS", x = 180, y = 105 + yOffset, color = 0x2d1e1eff);
                 } 
             }
-                  
+            
             text!("Total Score: {}", self.dayScore; font = "TENPIXELS", x = 180, y = 180, color = 0x2d1e1eff);
         }
 
@@ -391,15 +396,21 @@ impl GameState {
                 continue;
             }
             let dayPress = self.uibuttons[n].check(select);
-            if self.tutorial == 0 && n == 0 {
-                self.uibuttons[n].action = false;
-            } else if self.tutorial == 1 && n == 4 {
-                self.uibuttons[n].action = false;
-            } else if !self.endScreen && n == 0 && self.tutorial >= 2{
-                self.uibuttons[n].action = false;
+            if self.tutorial == 0 {
+                if n == 0 || n == 6 {
+                    self.uibuttons[n].action = false;
+                }
+            } else if self.tutorial == 1 {
+                if n == 4 || n == 6 {
+                    self.uibuttons[n].action = false;
+                }
+            } else if !self.endScreen && self.tutorial >= 2{
+                if n == 0 || n == 6 {
+                    self.uibuttons[n].action = false;
+                }
             } else if !self.endScreen && n == 5 && self.tutorial <= 2{
                 self.uibuttons[n].action = false;
-            } else if self.endScreen && n != 0 {
+            } else if self.endScreen && n != 0 && n != 6{
                 self.uibuttons[n].action = false;
             } else if self.finalScore && n != 0 {
                 self.uibuttons[n].action = false;
@@ -411,42 +422,27 @@ impl GameState {
 
                 match n {
                     0 => {
+                        if self.dayScore > self.dayCheck {
+                            self.totalScore += self.dayScore;
+                        } else {
+                            self.totalScore += self.dayCheck;
+                        }
                         if self.day == 10 {
                             self.finalScore = true;
                             self.uibuttons[0].action = false;
                             continue;
                         }
                         self.day += 1;
+                        if self.day == 1 {
+                            self.uibuttons[0].hitbox.0 = 265.0;
+                        }
                         self.tutorial += 1;
                         self.reader.reset();
                         self.reader.customersDay(self.day);
-                        self.uibuttons[0].action = false;
-                        self.trackPrint = 0;
-                        self.currCus = 0;
-                        self.cusCheck = false;
-                        self.cusTimer = 0;
-                        self.dayScore = 0;
-                        self.cusReaction = false;
-                        self.endScreen = false;
-                        self.startDay = true;
-                        self.checked = vec![false; 8];
-                        self.soup.limit = self.reader.customers[0].order.len();
-                        self.soup.soup = Vec::new();
-                        self.tList.dayIngredients(self.reader.ingredList.clone());
-                        for n in 0..8 {
-                            self.tList.trackPos1[n] = (0.0,206.0,false);
-                            self.tList.trackPos2[n] = (510.0,44.0,false);
-                            self.tList.ingredPos1[n].0.hitbox.0 = 0.0;
-                            self.tList.ingredPos1[n].0.hitbox.1 = 206.0;
-                            self.tList.ingredPos2[n].0.hitbox.0 = 510.0;
-                            self.tList.ingredPos2[n].0.hitbox.1 = 44.0;
-
-                            self.tList.ingredPos1[n].1 = Ingredient::new( "empty");
-                            self.tList.ingredPos2[n].1 = Ingredient::new("empty");
-                        }
-                        
+                        self.reset();
+                        self.redo = false;
                         timer_anim.restart();
-                        //log!("{}", self.reader.customers[self.currCus].cusName )
+                        
                     }
                     1 => {continue;}
                     2 => {
@@ -468,7 +464,6 @@ impl GameState {
                             audio::set_volume("bell", 0.1);
                             self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
                             self.dayScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
-                            self.totalScore += self.dayScore;
                             //self.reader.customers[self.currCus].drawScoreReaction();
                             //sprite!("sadcustomer", x = 80, y = 200);
                             self.cusReaction = true;
@@ -486,6 +481,15 @@ impl GameState {
                         }
                         self.uibuttons[5].action = false;
                     }
+                    6 => {
+                        self.dayCheck = self.dayScore;
+                        self.reset();
+                        self.redo = true;
+                        self.reader.reset();
+                        self.reader.customersDay(self.day);
+                        self.uibuttons[6].action = false;
+                        timer_anim.restart();
+                    }
                     _ => {}
                 
                 }   
@@ -500,6 +504,8 @@ impl GameState {
                 self.uibuttons[n].nonselect();
             } else if n == 5 && self.tutorial >=2 && !self.endScreen{
                 self.uibuttons[n].draw();
+            } else if n == 6 && self.endScreen{
+                self.uibuttons[n].tempDraw("hi");
             }
             
         }
@@ -513,13 +519,12 @@ impl GameState {
         //     log!("{}", self.reader.customers[self.currCus-1].drawScoreReaction());
         // }
    
-        if self.cusTimer == self.cusLim {
+        if self.cusTimer == self.cusLim && !self.endScreen{
             if self.currCus != self.reader.custNum - 1 {
                 // audio::play("bell");
                 // audio::set_volume("bell", 0.1);
                 //maybe new audio? steps walking away lmao
                 self.dayScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
-                self.totalScore += self.dayScore;
                 self.currCus += 1;
                 self.soup.soup = Vec::new();
                 self.cusTimer = 0;
@@ -538,6 +543,8 @@ impl GameState {
             //text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
             text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
             text!("Day: {}", self.day; x = 10, y = 5, font = "TENPIXELS");
+            text!("Total Score: {}", self.totalScore; x = 100, y = 5, font = "TENPIXELS");
+            text!("Score: {}", self.dayCheck; x = 300, y = 5, font = "TENPIXELS");
             self.reader.customers[self.currCus].createOrder(self.cusTimer, self.day);
             let mut offsetdashes = 98;
             for n in 0..self.soup.limit {
@@ -550,10 +557,37 @@ impl GameState {
                 text!("{}", self.soup.soup[n].name; x = 33, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
             }
         }
+    }
         
         
         
 
+    pub fn reset(&mut self) {
+        // reset your game state
+        self.uibuttons[0].action = false;
+        self.trackPrint = 0;
+        self.currCus = 0;
+        self.cusCheck = false;
+        self.cusTimer = 0;
+        self.dayScore = 0;
+        self.cusReaction = false;
+        self.endScreen = false;
+        self.startDay = true;
+        self.checked = vec![false; 8];
+        self.soup.limit = self.reader.customers[0].order.len();
+        self.soup.soup = Vec::new();
+        self.tList.dayIngredients(self.reader.ingredList.clone());
+        for n in 0..8 {
+            self.tList.trackPos1[n] = (0.0,206.0,false);
+            self.tList.trackPos2[n] = (510.0,44.0,false);
+            self.tList.ingredPos1[n].0.hitbox.0 = 0.0;
+            self.tList.ingredPos1[n].0.hitbox.1 = 206.0;
+            self.tList.ingredPos2[n].0.hitbox.0 = 510.0;
+            self.tList.ingredPos2[n].0.hitbox.1 = 44.0;
+
+            self.tList.ingredPos1[n].1 = Ingredient::new( "empty");
+            self.tList.ingredPos2[n].1 = Ingredient::new("empty");
+        }
     }
 
 

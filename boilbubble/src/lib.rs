@@ -44,6 +44,7 @@ struct GameState {
     scoreSwitch: bool,
     redo: bool,
     cusReaction: bool,
+    finalScore: bool
 }
 impl GameState {
     pub fn new() -> Self {
@@ -84,6 +85,7 @@ impl GameState {
             scoreSwitch: false,
             redo: false,
             cusReaction: false,
+            finalScore: false,
         }
     }
     pub fn update(&mut self) {
@@ -98,11 +100,6 @@ impl GameState {
                 //18 seconds
                 self.timerSpeed = 1.35;
                 self.cusLim = 18;
-            }
-            11 => {
-                //16 seconds
-                self.timerSpeed = 1.5;
-                self.cusLim = 16;
             }
             _ => {}
         }
@@ -358,6 +355,11 @@ impl GameState {
             text!("Total Score: {}", self.dayScore; font = "TENPIXELS", x = 180, y = 180, color = 0x2d1e1eff);
         }
 
+        if self.day == 10 && self.finalScore == true {
+            sprite!("finalscore", x = 0, y = 0);
+            
+        }
+
         //check to see if day continue button is pressed or not
         for n in 0..self.uibuttons.len() {
             if n == 2 {
@@ -380,6 +382,8 @@ impl GameState {
                 self.uibuttons[n].action = false;
             } else if self.endScreen && n != 0 && n != 6{
                 self.uibuttons[n].action = false;
+            } else if self.finalScore && n != 0 {
+                self.uibuttons[n].action = false;
             }
                     //if pressed, goes to next day, resets all track positions, empties soup, and sets soup limit
                     //resetting will all occur here when going to next day for now
@@ -392,6 +396,11 @@ impl GameState {
                             self.totalScore += self.dayScore;
                         } else {
                             self.totalScore += self.dayCheck;
+                        }
+                        if self.day == 10 {
+                            self.finalScore = true;
+                            self.uibuttons[0].action = false;
+                            continue;
                         }
                         self.day += 1;
                         if self.day == 1 {
@@ -497,7 +506,7 @@ impl GameState {
         }
         
 
-        if self.day > 0 && !self.cusCheck{
+        if self.day > 0 && !self.cusCheck && !self.finalScore {
             //text!("Customer: {}", self.reader.customers[self.currCus].cusName; font = "TENPIXELS", x = 0, y = 270);
             //text!("Order: {:?}", self.reader.customers[self.currCus].order[0].ingredType; font = "TENPIXELS", x = 30, y = 140);
             //text!("{:?}", self.reader.customers[self.currCus].order[1].ingredType; font = "TENPIXELS", x = 30, y = 150);
@@ -507,18 +516,21 @@ impl GameState {
             text!("Total Score: {}", self.totalScore; x = 100, y = 5, font = "TENPIXELS");
             text!("Score: {}", self.dayCheck; x = 300, y = 5, font = "TENPIXELS");
             self.reader.customers[self.currCus].createOrder(self.cusTimer, self.day);
-        }
-        let mut offsetdashes = 98;
-        for n in 0..self.soup.limit {
-            offsetdashes += 14;
-            text!("-", x = 25, y = offsetdashes, font = "TENPIXELS", color = 0x2d1e1eff);
-        }
-        let mut offset = 98;
-        for n in 0..self.soup.soup.len() {     
-            offset += 14;       
-            text!("{}", self.soup.soup[n].name; x = 33, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
+            let mut offsetdashes = 98;
+            for n in 0..self.soup.limit {
+                offsetdashes += 14;
+                text!("-", x = 25, y = offsetdashes, font = "TENPIXELS", color = 0x2d1e1eff);
+            }
+            let mut offset = 98;
+            for n in 0..self.soup.soup.len() {     
+                offset += 14;       
+                text!("{}", self.soup.soup[n].name; x = 33, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
+            }
         }
     }
+        
+        
+        
 
     pub fn reset(&mut self) {
         // reset your game state

@@ -40,6 +40,7 @@ struct GameState {
     checked: Vec<bool>,
     endScreen: bool,
     cusReaction: bool,
+    finalScore: bool
 }
 impl GameState {
     pub fn new() -> Self {
@@ -75,6 +76,7 @@ impl GameState {
             checked: vec![false; 8],
             endScreen: false,
             cusReaction: false,
+            finalScore: false,
         }
     }
     pub fn update(&mut self) {
@@ -89,11 +91,6 @@ impl GameState {
                 //18 seconds
                 self.timerSpeed = 1.35;
                 self.cusLim = 18;
-            }
-            11 => {
-                //16 seconds
-                self.timerSpeed = 1.5;
-                self.cusLim = 16;
             }
             _ => {}
         }
@@ -332,6 +329,11 @@ impl GameState {
             text!("Total Score: {}", self.totalScore; font = "TENPIXELS", x = 180, y = 180);
         }
 
+        if self.day == 10 && self.finalScore == true {
+            sprite!("finalscore", x = 0, y = 0);
+            
+        }
+
         //check to see if day continue button is pressed or not
         for n in 0..self.uibuttons.len() {
             if n == 2 {
@@ -348,6 +350,8 @@ impl GameState {
                 self.uibuttons[n].action = false;
             } else if self.endScreen && n != 0 {
                 self.uibuttons[n].action = false;
+            } else if self.finalScore && n != 0 {
+                self.uibuttons[n].action = false;
             }
                     //if pressed, goes to next day, resets all track positions, empties soup, and sets soup limit
                     //resetting will all occur here when going to next day for now
@@ -356,12 +360,16 @@ impl GameState {
 
                 match n {
                     0 => {
+                        if self.day == 10 {
+                            self.finalScore = true;
+                            self.uibuttons[0].action = false;
+                            continue;
+                        }
                         self.day += 1;
                         self.tutorial += 1;
                         self.reader.reset();
                         log!("{}", self.day);
                         self.reader.customersDay(self.day);
-                        log!("hi");
                         self.uibuttons[0].action = false;
                         self.trackPrint = 0;
                         self.currCus = 0;
@@ -480,7 +488,7 @@ impl GameState {
         }
         
 
-        if self.day > 0 && !self.cusCheck{
+        if self.day > 0 && !self.cusCheck && !self.finalScore {
             //text!("Customer: {}", self.reader.customers[self.currCus].cusName; font = "TENPIXELS", x = 0, y = 270);
             //text!("Order: {:?}", self.reader.customers[self.currCus].order[0].ingredType; font = "TENPIXELS", x = 30, y = 140);
             //text!("{:?}", self.reader.customers[self.currCus].order[1].ingredType; font = "TENPIXELS", x = 30, y = 150);
@@ -488,17 +496,18 @@ impl GameState {
             text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
             text!("Day: {}", self.day; x = 10, y = 5, font = "TENPIXELS");
             self.reader.customers[self.currCus].createOrder(self.cusTimer, self.day);
+            let mut offsetdashes = 98;
+            for n in 0..self.soup.limit {
+                offsetdashes += 14;
+                text!("-", x = 25, y = offsetdashes, font = "TENPIXELS", color = 0x2d1e1eff);
+            }
+            let mut offset = 98;
+            for n in 0..self.soup.soup.len() {     
+                offset += 14;       
+                text!("{}", self.soup.soup[n].name; x = 33, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
+            }
         }
-        let mut offsetdashes = 98;
-        for n in 0..self.soup.limit {
-            offsetdashes += 14;
-            text!("-", x = 25, y = offsetdashes, font = "TENPIXELS", color = 0x2d1e1eff);
-        }
-        let mut offset = 98;
-        for n in 0..self.soup.soup.len() {     
-            offset += 14;       
-            text!("{}", self.soup.soup[n].name; x = 33, y = offset, font = "TENPIXELS", color = 0x2d1e1eff);            
-        }
+        
         
         
 

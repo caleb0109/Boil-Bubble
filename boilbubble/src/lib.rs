@@ -181,9 +181,6 @@ impl GameState {
                     self.tList.trackPos2[n].2 = true;
                 }
             }
-
-
-
             
             //if ingredient thats being held is hovering over the soup box and the mouse was just released
             //then it will add the ingredient that was being held to the soup and set the
@@ -529,8 +526,6 @@ impl GameState {
         }
     }
         
-        
-        
 
     pub fn reset(&mut self) {
         // reset your game state
@@ -559,6 +554,4 @@ impl GameState {
             self.tList.ingredPos2[n].1 = Ingredient::new("empty");
         }
     }
-
-
 }

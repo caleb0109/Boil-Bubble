@@ -87,7 +87,7 @@ impl Customer {
         anim.set_fill_forwards(true);
 
         let percentage = self.score / self.order.len() as f32;
-        if percentage <= 0.3 {           
+        if percentage <= 0.3 {
             anim.use_sprite("sadcustomer");
             anim.set_repeat(1);
             //sprite!(animation_key = "reaction", default_sprite = "emptycustomer", x = 118, y = 136);

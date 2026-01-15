@@ -111,8 +111,8 @@ impl GameState {
         sprite!("background", x= 0, y = 0);
         sprite!("cauldron", x = 145, y = 148);
         sprite!("cat", x = 181, y =65);
-        sprite!("bowls_lowertrack", x = 0, y = 0);
-        sprite!("bowls_uppertrack", x = 0, y = 0);
+        //sprite!("bowls_lowertrack", x = 0, y = 0);
+        //sprite!("bowls_uppertrack", x = 0, y = 0);
         
         
         //UI
@@ -447,16 +447,32 @@ impl GameState {
                         } else {
                             self.totalScore += self.dayCheck;
                         }
+                        if self.finalScore {
+                            self.cameraPos.0 = 765;
+                            self.reader.reset();
+                            self.reader.customersDay(self.day);
+                            self.reset();
+                            self.redo = false;
+                            timer_anim.restart();
+                            self.finalScore  = false;
+                            self.tutorial = 0;
+                            self.day = 0;
+                            self.totalScore = 0;
+                            self.uibuttons[0].action = false;
+                            break;
+                        }
                         if self.day == 10 {
                             self.finalScore = true;
+                            self.uibuttons[0].hitbox.0 = 116.0;
                             self.uibuttons[0].action = false;
                             continue;
                         }
-                        self.day += 1;
-                        if self.day == 1 {
+                        if self.day == 1 || self.tutorial >= 1 {
                             self.uibuttons[0].hitbox.0 = 260.0;
                             self.uibuttons[0].text = "continue".to_string();
                         }
+                        self.day += 1;
+                        
                         self.tutorial += 1;
                         self.reader.reset();
                         self.reader.customersDay(self.day);

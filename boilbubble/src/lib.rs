@@ -184,9 +184,6 @@ impl GameState {
                     self.tList.trackPos2[n].2 = true;
                 }
             }
-
-
-
             
             //if ingredient thats being held is hovering over the soup box and the mouse was just released
             //then it will add the ingredient that was being held to the soup and set the
@@ -299,9 +296,20 @@ impl GameState {
         //too early and being overlapped by other ingredients
         for n in 0..self.trackPrint {
             if self.tList.ingredPos1[n].0.hover(self.tList.ingredPos1[n].0.hitbox, x, y) && self.tList.ingredPos1[n].1.name != "empty" && !self.endScreen {
+                //if the name of the ingredient is longer/shorter than accounted for,
+                //then either set the hover name box to a certain size to accomodate for it
+                //i couldn't really figure out a better solution sorry ;-;
+                let mut w = self.tList.ingredPos1[n].1.name.len() as f32 * 6.0 + 26.5;
+                if self.tList.ingredPos1[n].1.name.len() >= 10 {
+                    w = 103.0;
+                } else if self.tList.ingredPos1[n].1.name.len() > 7 && self.tList.ingredPos1[n].1.name.len() < 10{
+                    w = 86.0;
+                } else if self.tList.ingredPos1[n].1.name.len() <= 4 {
+                    w = 42.0;
+                }
                 rect!(x = self.tList.ingredPos1[n].0.hitbox.0 + 55.0, 
                     y = self.tList.ingredPos1[n].0.hitbox.1 - 10.0, 
-                    w = self.tList.ingredPos1[n].1.name.len() as f32 * 6.0 + 26.5,
+                    w = w,
                     h = 20.0,
                     border_size = 1,
                     border_radius = 4,
@@ -309,9 +317,17 @@ impl GameState {
                     );
                 text!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x2d1e1eff);
             } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && self.tList.ingredPos2[n].1.name != "empty" && !self.endScreen{
+                let mut w = self.tList.ingredPos2[n].1.name.len() as f32 * 6.0 + 26.5;
+                if self.tList.ingredPos2[n].1.name.len() >= 10 {
+                    w = 103.0;
+                } else if self.tList.ingredPos2[n].1.name.len() > 7 && self.tList.ingredPos1[n].1.name.len() < 10{
+                    w = 86.0;
+                } else if self.tList.ingredPos2[n].1.name.len() <= 4 {
+                    w = 42.0;
+                }
                 rect!(x = self.tList.ingredPos2[n].0.hitbox.0 + 55.0, 
                     y = self.tList.ingredPos2[n].0.hitbox.1 - 10.0, 
-                    w = self.tList.ingredPos2[n].1.name.len() as f32 * 6.0 + 26.5,
+                    w = w,
                     h = 20.0,
                     border_size = 1,
                     border_radius = 4,
@@ -562,8 +578,6 @@ impl GameState {
         }
     }
         
-        
-        
 
     pub fn reset(&mut self) {
         // reset your game state
@@ -592,6 +606,4 @@ impl GameState {
             self.tList.ingredPos2[n].1 = Ingredient::new("empty");
         }
     }
-
-
 }

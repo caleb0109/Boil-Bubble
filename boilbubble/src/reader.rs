@@ -97,8 +97,6 @@ impl Reader {
         self.ingredNum = self.lines[self.current_line].parse::<usize>().unwrap();
         self.current_line += 1;
         
-        log!("hi");
-
         for x in 0..self.custNum {
             let name = self.lines[self.current_line].clone();
             self.current_line += 1;

@@ -45,6 +45,7 @@ struct GameState {
     scoreSwitch: bool,
     redo: bool,
     cusReaction: bool,
+    cusRestart: bool,
     finalScore: bool
 }
 impl GameState {
@@ -59,13 +60,13 @@ impl GameState {
             ingredHold: false,
             ingredCheck: 0,
             uibuttons: [
-                UIButton::new("start", (200.0, 230.0, 100.0, 20.0), false),
+                UIButton::new("start", (200.0, 230.0, 116.0, 20.0), false),
                 UIButton::new("soup", (145.0, 148.0, 210.0, 50.0), false),
                 UIButton::new("soupDump", (140.0, 75.0, 8.0, 8.0), false),
                 UIButton::new("start", (582.0, 174.0, 100.0, 20.0), false),
-                UIButton::new("continue", (195.0, 230.0, 100.0, 20.0), false),
+                UIButton::new("continue", (195.0, 230.0, 116.0, 20.0), false),
                 UIButton::new("serve", (26.0, 174.0, 94.0, 18.0), false),
-                UIButton::new("redo", (140.0, 233.0, 100.0, 20.0), false),
+                UIButton::new("restart", (136.0, 230.0, 116.0, 20.0), false),
             ],
             soup: Soup::new(),
             reader: reader::Reader::new(),
@@ -86,6 +87,7 @@ impl GameState {
             scoreSwitch: false,
             redo: false,
             cusReaction: false,
+            cusRestart: false,
             finalScore: false,
         }
     }
@@ -434,7 +436,8 @@ impl GameState {
                         }
                         self.day += 1;
                         if self.day == 1 {
-                            self.uibuttons[0].hitbox.0 = 265.0;
+                            self.uibuttons[0].hitbox.0 = 260.0;
+                            self.uibuttons[0].text = "continue".to_string();
                         }
                         self.tutorial += 1;
                         self.reader.reset();
@@ -464,9 +467,8 @@ impl GameState {
                             audio::set_volume("bell", 0.1);
                             self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
                             self.dayScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
-                            //self.reader.customers[self.currCus].drawScoreReaction();
-                            //sprite!("sadcustomer", x = 80, y = 200);
                             self.cusReaction = true;
+                            self.cusRestart = true;
                             self.currCus += 1;
                             self.cusTimer = 0;
                             self.soup.soup = Vec::new();
@@ -505,19 +507,20 @@ impl GameState {
             } else if n == 5 && self.tutorial >=2 && !self.endScreen{
                 self.uibuttons[n].draw();
             } else if n == 6 && self.endScreen{
-                self.uibuttons[n].tempDraw("hi");
+                self.uibuttons[n].draw();
             }
             
         }
         
         //customer reaction anims
-        // if self.cusReaction == true {
-        //     self.reader.customers[self.currCus-1].drawScoreReaction();
-        //     if self.reader.customers[self.currCus-1].drawScoreReaction() {
-        //         self.cusReaction = false;
-        //     }
-        //     log!("{}", self.reader.customers[self.currCus-1].drawScoreReaction());
-        // }
+        if self.cusReaction == true {   
+            self.reader.customers[self.currCus-1].drawScoreReaction(self.cusRestart);
+            self.cusRestart = false;
+
+            if self.reader.customers[self.currCus-1].drawScoreReaction(self.cusRestart) {
+                self.cusReaction = false;
+            }
+        }
    
         if self.cusTimer == self.cusLim && !self.endScreen{
             if self.currCus != self.reader.custNum - 1 {
@@ -544,7 +547,7 @@ impl GameState {
             text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
             text!("Day: {}", self.day; x = 10, y = 5, font = "TENPIXELS");
             text!("Total Score: {}", self.totalScore; x = 100, y = 5, font = "TENPIXELS");
-            text!("Score: {}", self.dayCheck; x = 300, y = 5, font = "TENPIXELS");
+            //text!("Score: {}", self.dayCheck; x = 300, y = 5, font = "TENPIXELS");
             self.reader.customers[self.currCus].createOrder(self.cusTimer, self.day);
             let mut offsetdashes = 98;
             for n in 0..self.soup.limit {

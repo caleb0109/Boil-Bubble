@@ -81,26 +81,33 @@ impl Customer {
         return self.total as i32;
     }
 
-    pub fn drawScoreReaction(&mut self) -> bool {
+    pub fn drawScoreReaction(&mut self, restart: bool) -> bool {
         let anim = animation::get("reaction");
-        
-        anim.set_fill_forwards(true);
+
+        if restart {
+            anim.restart();
+        }
 
         let percentage = self.score / self.order.len() as f32;
         if percentage <= 0.3 {
-            anim.use_sprite("sadcustomer");
+            anim.use_sprite("customerreactions#sad");
             anim.set_repeat(1);
+            anim.set_fill_forwards(true);
             //sprite!(animation_key = "reaction", default_sprite = "emptycustomer", x = 118, y = 136);
         } else if percentage > 0.3 && percentage <= 0.7 {
-            anim.use_sprite("neutralcustomer");
+            anim.use_sprite("customerreactions#neutral");
             anim.set_repeat(1);
+            anim.set_fill_forwards(true);
             //sprite!(animation_key = "reaction", default_sprite = "emptycustomer", x = 118, y = 136);
         } else if percentage > 0.7 {
-            anim.use_sprite("happycustomer");
+            anim.use_sprite("customerreactions#happy");
             anim.set_repeat(1);
+            anim.set_fill_forwards(true);
             //sprite!(animation_key = "reaction", default_sprite = "emptycustomer", x = 118, y = 136);
         } 
-        sprite!(animation_key = "reaction", x = 118, y = 136);
-        return anim.done();
+
+        sprite!(animation_key = "reaction", default_sprite = "customerreaction#empty", x = 118, y = 136);
+        
+        return anim.done();     
     }
 }

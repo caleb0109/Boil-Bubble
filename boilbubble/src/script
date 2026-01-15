@@ -207,7 +207,7 @@ meat
 cheese
 
 day7
-4
+5
 16
 MOUSE
 I'm off my diet! Something super sweet, please!
@@ -221,6 +221,13 @@ I'd love a hot soup, lots of veggies!
 4
 Spicy
 Earthy
+Earthy
+Earthy
+LION
+MEAT! And don't forget the veggies!
+4
+Savory
+Savory
 Earthy
 Earthy
 DUCK
@@ -254,7 +261,7 @@ meat
 fish
 
 day8
-5
+6
 16
 BUNNY
 I want a sweeeet soup! Maybe a little sour?
@@ -284,12 +291,19 @@ Salty
 Salty
 Salty
 Salty
+BEAR
+Sour... Fruity... With a lot of meat...
+4
+Sour
+Fruity
+Savory
+Savory
 LION
 I've been into veggies... Maybe a side of meat?
 4
 Earthy
 Earthy
-Savory
+Earthy
 Savory
 sugar
 chocolate
@@ -310,7 +324,7 @@ fish
 
 
 day9
-5
+6
 16
 BEAR
 Spicy... Sweet... Earthy... With any kind of meat...
@@ -326,6 +340,13 @@ Fruity
 Fruity
 Earthy
 Earthy
+OX
+Max out the spice and make me sweat!
+4
+Spicy
+Spicy
+Spicy
+Spicy
 FROG
 I'm sick of dirt... Maybe something jammy?
 4
@@ -365,7 +386,7 @@ meat
 fish
 
 day10
-5
+7
 16
 FOX
 NO MORE SALT... JUST VEGGIES...
@@ -381,6 +402,13 @@ Thick
 Fruity
 Sweet
 Sweet
+KOALA
+A thick warm soup with tons of veggies is just perfect!
+4
+Thick
+Fruity
+Earthy
+Earthy
 CAT
 I wanna try a little spice! But still jammy!
 4
@@ -402,6 +430,13 @@ Earthy
 Earthy
 Thick
 Spicy
+DUCK
+Feeling better now! Sweet! Spicy! Fruity! Earthy!
+4
+Sweet
+Spicy
+Fruity
+Earthy
 sugar
 chocolate
 lemon

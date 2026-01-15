@@ -335,7 +335,8 @@ impl GameState {
                     border_color = 0x000000ff,
                     );
                 text!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x2d1e1eff);
-            } else if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && self.tList.ingredPos2[n].1.name != "empty" && !self.endScreen{
+            } 
+            if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && self.tList.ingredPos2[n].1.name != "empty" && !self.endScreen{
                 let mut w = self.tList.ingredPos2[n].1.name.len() as f32 * 6.0 + 26.5;
                 if self.tList.ingredPos2[n].1.name.len() >= 10 {
                     w = 103.0;
@@ -410,19 +411,19 @@ impl GameState {
             if self.totalScore == 0 {
                 sprite!("stars#0", x = xpos_star, y = ypos_star);
                 text = "Sorry! You're a 0-star chef!\nMight not come again!";
-            } else if self.totalScore > 0 && self.totalScore <= 600 {
+            } else if self.totalScore > 0 && self.totalScore <= 940 {
                 sprite!("stars#1", x = xpos_star, y = ypos_star);
                 text = "Woah! You're a 1-star chef!\nNot the greatest, but I see the potential!";
-            } else if self.totalScore > 600 && self.totalScore <= 1200 {
+            } else if self.totalScore > 940 && self.totalScore <= 1880 {
                 sprite!("stars#2", x = xpos_star, y = ypos_star);
                 text = "Woah! You're a 2-star chef!\nFood's been pretty hit or miss!";
-            } else if self.totalScore > 1200 && self.totalScore <= 2000 {
+            } else if self.totalScore > 1880 && self.totalScore <= 2820 {
                 sprite!("stars#3", x = xpos_star, y = ypos_star);
                 text = "Wow! You're a 3-star chef!\nNot too shabby!";
-            } else if self.totalScore > 2000 && self.totalScore <= 2800 {
+            } else if self.totalScore > 2820 && self.totalScore <= 3760 {
                 sprite!("stars#4", x = xpos_star, y = ypos_star);
                 text = "Wow! You're a 4-star chef!\nYou're sooooo close!";
-            } else if self.totalScore > 2800 && self.totalScore <= 3600 {
+            } else if self.totalScore > 3760 && self.totalScore <= 4700 {
                 sprite!("stars#5", x = xpos_star, y = ypos_star);
                 text = "Congrats! You're a 5-star chef!\nCan't wait to see what you cook up next!";
             }
@@ -478,11 +479,16 @@ impl GameState {
                             self.day = 0;
                             self.totalScore = 0;
                             self.uibuttons[0].action = false;
+                            self.uibuttons[0].text = "start".to_string();
                             break;
                         }
                         if self.day == 10 {
                             self.finalScore = true;
+<<<<<<< HEAD
                             self.uibuttons[0].hitbox.0 = 198.0;
+=======
+                            self.uibuttons[0].hitbox.0 = 195.0;
+>>>>>>> 2768df7bd48f8f2c153ec44640eea562ed21e7ef
                             self.uibuttons[0].action = false;
                             continue;
                         }

@@ -383,29 +383,31 @@ impl GameState {
             let xpos_star = 165;
             let ypos_star = 42;
 
-            let xpos_text = 116;
+            let xpos_text = 105;
             let ypos_text = 147;
 
-            //placeholder score values
+            let mut text = "";
+            
             if self.totalScore == 0 {
                 sprite!("stars#0", x = xpos_star, y = ypos_star);
-                text!("Sorry! You're a 0-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
-            } else if self.totalScore > 0 && self.totalScore <= 1000 {
+                text = "Sorry! You're a 0-star chef!\nMight not come again!";
+            } else if self.totalScore > 0 && self.totalScore <= 600 {
                 sprite!("stars#1", x = xpos_star, y = ypos_star);
-                text!("Woah! You're a 1-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
-            } else if self.totalScore > 1000 && self.totalScore <= 2000 {
+                text = "Woah! You're a 1-star chef!\nNot the greatest, but I see the potential!";
+            } else if self.totalScore > 600 && self.totalScore <= 1200 {
                 sprite!("stars#2", x = xpos_star, y = ypos_star);
-                text!("Woah! You're a 2-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
-            } else if self.totalScore > 2000 && self.totalScore <= 3000 {
+                text = "Woah! You're a 2-star chef!\nFood's been pretty hit or miss!";
+            } else if self.totalScore > 1200 && self.totalScore <= 2000 {
                 sprite!("stars#3", x = xpos_star, y = ypos_star);
-                text!("Wow! You're a 3-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
-            } else if self.totalScore > 3000 && self.totalScore <= 4000 {
+                text = "Wow! You're a 3-star chef!\nNot too shabby!";
+            } else if self.totalScore > 2000 && self.totalScore <= 2800 {
                 sprite!("stars#4", x = xpos_star, y = ypos_star);
-                text!("Wow! You're a 4-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
-            } else if self.totalScore > 4000 && self.totalScore <= 5000 {
+                text = "Wow! You're a 4-star chef!\nYou're sooooo close!";
+            } else if self.totalScore > 2800 && self.totalScore <= 3600 {
                 sprite!("stars#5", x = xpos_star, y = ypos_star);
-                text!("Congrats! You're a 5-star chef!", x = xpos_text, y = ypos_text, font = "TENPIXELS", color = 0x2d1e1eff);
+                text = "Congrats! You're a 5-star chef!\nCan't wait to see what you cook up next!";
             }
+            text_box!("{}", text; x = xpos_text, y = ypos_text, w = 300, h = 33, align = "center", font = "TENPIXELS", color = 0x2d1e1eff);
         }
 
         //check to see if day continue button is pressed or not
@@ -522,7 +524,7 @@ impl GameState {
                 self.uibuttons[n].nonselect();
             } else if n == 5 && self.tutorial >=2 && !self.endScreen{
                 self.uibuttons[n].draw();
-            } else if n == 6 && self.endScreen{
+            } else if n == 6 && self.endScreen && !self.finalScore{
                 self.uibuttons[n].draw();
             }
             
@@ -562,7 +564,7 @@ impl GameState {
             //text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
             text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
             text!("Day: {}", self.day; x = 10, y = 5, font = "TENPIXELS");
-            text!("Total Score: {}", self.totalScore; x = 100, y = 5, font = "TENPIXELS");
+            text!("Total Score: {}", self.totalScore; x = 370, y = 5, font = "TENPIXELS");
             //text!("Score: {}", self.dayCheck; x = 300, y = 5, font = "TENPIXELS");
             self.reader.customers[self.currCus].createOrder(self.cusTimer, self.day);
             let mut offsetdashes = 98;

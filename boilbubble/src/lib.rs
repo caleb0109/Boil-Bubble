@@ -135,7 +135,26 @@ impl GameState {
             audio::play("boil_and_bubble");
             audio::set_volume("boil_and_bubble", 0.1);
         }
-
+        
+        //draw soup
+        if self.soup.soup.len() == 0 {
+            self.uibuttons[1].text = "soup".to_string()
+        }
+        for n in 0..self.soup.soup.len() {       
+            let matchType ;
+            matchType = self.soup.soup[n].ingredType;
+            match matchType {
+                IngredientType::Sweet => self.uibuttons[1].text = "soup_ltyellow".to_string(),
+                IngredientType::Salty => self.uibuttons[1].text = "soup_ltgreen".to_string(),
+                IngredientType::Sour => self.uibuttons[1].text = "soup_yellow".to_string(),
+                IngredientType::Spicy => self.uibuttons[1].text = "soup_red".to_string(),
+                IngredientType::Earthy => self.uibuttons[1].text = "soup_dkgreen".to_string(),
+                IngredientType::Savory => self.uibuttons[1].text = "soup_orange".to_string(),
+                IngredientType::Fruity => self.uibuttons[1].text = "soup_purple".to_string(),
+                IngredientType::Thick => self.uibuttons[1].text = "soup_white".to_string(),               
+                _ => continue,
+            }     
+        }
         self.uibuttons[1].draw();
 
         camera::set_xy(self.cameraPos.0, self.cameraPos.1);
@@ -463,7 +482,7 @@ impl GameState {
                         }
                         if self.day == 10 {
                             self.finalScore = true;
-                            self.uibuttons[0].hitbox.0 = 116.0;
+                            self.uibuttons[0].hitbox.0 = 198.0;
                             self.uibuttons[0].action = false;
                             continue;
                         }
@@ -481,7 +500,9 @@ impl GameState {
                         timer_anim.restart();
                         
                     }
-                    1 => {continue;}
+                    1 => {
+                        continue;                
+                    }
                     2 => {
                         //self.soup.dumpSoup();
                         self.uibuttons[2].action = false;
@@ -548,10 +569,10 @@ impl GameState {
         
         //customer reaction anims
         if self.cusReaction == true {   
-            self.reader.customers[self.currCus-1].drawScoreReaction(self.cusRestart);
+            self.reader.customers[self.currCus-1].scoreReaction(self.cusRestart);
             self.cusRestart = false;
 
-            if self.reader.customers[self.currCus-1].drawScoreReaction(self.cusRestart) {
+            if self.reader.customers[self.currCus-1].scoreReaction(self.cusRestart) {
                 self.cusReaction = false;
             }
         }

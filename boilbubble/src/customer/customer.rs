@@ -81,7 +81,7 @@ impl Customer {
         return self.total as i32;
     }
 
-    pub fn drawScoreReaction(&mut self, restart: bool) -> bool {
+    pub fn scoreReaction(&mut self, restart: bool) -> bool {
         let anim = animation::get("reaction");
 
         if restart {

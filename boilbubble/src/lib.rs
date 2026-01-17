@@ -182,21 +182,6 @@ impl GameState {
         for n in 0..self.trackPrint {
             select = self.tList.ingredPos1[n].0.check(select);
             select2 = self.tList.ingredPos2[n].0.check(select2);
-            //checks if the track item is at the end of the opposite side from start
-            if !self.tList.trackPos1[n].2 {
-                
-            }
-            //checks if the track item is on the way back to starting side
-            if !self.tList.trackPos2[n].2{
-                //if the track item reaches min height and is on starting side
-                if self.tList.trackPos2[n].0 >= 0.0 && !self.tList.trackPos1[n].2{
-                    self.tList.trackPos2[n].0 -= 1.0;
-                }
-                //if track item reached min height, now descending and making sure it doesn't go above starting height
-                if self.tList.trackPos2[n].0 <= 2.5{
-                    self.tList.trackPos2[n].2 = true;
-                }
-            }
             
             //if ingredient thats being held is hovering over the soup box and the mouse was just released
             //then it will add the ingredient that was being held to the soup and set the
@@ -301,6 +286,14 @@ impl GameState {
                     self.tList.trackPos1[n].0 = 0.0;
                 }
                 if !self.tList.trackPos2[n].2 {
+                    //if the track item reaches min height and is on starting side
+                    if self.tList.trackPos2[n].0 >= 0.0 && !self.tList.trackPos1[n].2{
+                        self.tList.trackPos2[n].0 -= 1.0;
+                    }
+                    //if track item reached min height, now descending and making sure it doesn't go above starting height
+                    if self.tList.trackPos2[n].0 <= 2.5{
+                        self.tList.trackPos2[n].2 = true;
+                    }
                     sprite!("bowl", x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1);
                     sprite!(&self.tList.ingredPos2[n].1.name, x = self.tList.ingredPos2[n].0.hitbox.0, y = self.tList.ingredPos2[n].0.hitbox.1 - 11.0);
                 } else if self.tList.trackPos2[n].2 {

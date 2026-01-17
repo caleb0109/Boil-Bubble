@@ -20,14 +20,14 @@ impl Track {
             //x Position, y Position, check if reached lowest or highest point in track, check if it reached end of screen
             //lower track
             trackPos1: [
-                (0.0,206.0,false),
-                (0.0,206.0,false),
-                (0.0,206.0,false),
-                (0.0,206.0,false),
-                (0.0,206.0,false),
-                (0.0,206.0,false),
-                (0.0,206.0,false),
-                (0.0,206.0,false),
+                (0.0,220.0,false),
+                (0.0,220.0,false),
+                (0.0,220.0,false),
+                (0.0,220.0,false),
+                (0.0,220.0,false),
+                (0.0,220.0,false),
+                (0.0,220.0,false),
+                (0.0,220.0,false),
             ],
             //upper track
             trackPos2: [
@@ -42,21 +42,21 @@ impl Track {
             ],
             //x Position, y Position, ingredient on the track
             ingredPos1: [
-                (UIButton::new("ing", (0.0,206.0,60.0,40.0), false), 
+                (UIButton::new("ing", (0.0,220.0,60.0,40.0), false), 
                 Ingredient::new( "empty")),
-                (UIButton::new("ing", (0.0,206.0,60.0,40.0), false), 
+                (UIButton::new("ing", (0.0,220.0,60.0,40.0), false), 
                 Ingredient::new("empty")),
-                (UIButton::new("ing", (0.0,206.0,60.0,40.0), false), 
+                (UIButton::new("ing", (0.0,220.0,60.0,40.0), false), 
                 Ingredient::new("empty")),
-                (UIButton::new("ing", (0.0,206.0,60.0,40.0), false), 
+                (UIButton::new("ing", (0.0,220.0,60.0,40.0), false), 
                 Ingredient::new("empty")),
-                (UIButton::new("ing", (0.0,206.0,60.0,40.0), false), 
+                (UIButton::new("ing", (0.0,220.0,60.0,40.0), false), 
                 Ingredient::new("empty")),
-                (UIButton::new("ing", (0.0,206.0,60.0,40.0), false), 
+                (UIButton::new("ing", (0.0,220.0,60.0,40.0), false), 
                 Ingredient::new("empty")),
-                (UIButton::new("ing", (0.0,206.0,60.0,40.0), false), 
+                (UIButton::new("ing", (0.0,220.0,60.0,40.0), false), 
                 Ingredient::new("empty")),
-                (UIButton::new("ing", (0.0,206.0,60.0,40.0), false), 
+                (UIButton::new("ing", (0.0,220.0,60.0,40.0), false), 
                 Ingredient::new("empty")),
             ],
             //lower track
@@ -111,7 +111,7 @@ impl Track {
         let num: u32 = random::between(0,self.ingredList.len() as u32 -1);
         let choice = num as usize;
 
-        match random::between(0,4) {
+        match random::between(0,5) {
             0 => {return Ingredient::new("empty")}
             _ => {return self.ingredList[choice].clone()}
         }

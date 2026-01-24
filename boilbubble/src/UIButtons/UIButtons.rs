@@ -10,6 +10,7 @@ pub struct UIButton {
     pub hovered: bool,
     pub action: bool,
     pub count: u32,
+    pub hold: bool,
 }
 
 impl UIButton {
@@ -20,6 +21,7 @@ impl UIButton {
             hovered: false, // hover state
             action: act, //checks if specific button was pressed or not
             count: 0,
+            hold: false,
         }
     }
 
@@ -80,8 +82,7 @@ impl UIButton {
                 return (self.hitbox.0, self.hitbox.1);
             }else if m.pressed() && self.text == "ing" {
                 self.action = true;
-                self.hitbox.0 = x - (self.hitbox.2 / 2.0);
-                self.hitbox.1 = y - (self.hitbox.3 / 2.0);
+                self.hold = true;
                 return (self.hitbox.0, self.hitbox.1);
             } else if m.pressed() && self.text == "soup" {
                 self.action = true;

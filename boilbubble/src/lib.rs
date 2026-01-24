@@ -5,9 +5,7 @@ mod soup;
 mod reader;
 mod customer;
 
-use turbo::text_box::TextBox;
 use turbo::*;
-use turbo::time::tick;
 use track::Track;
 use soup::Soup;
 use crate::UIButtons::UIButtons::UIButton;
@@ -25,6 +23,7 @@ struct GameState {
     trackPrint: usize,
     ingredHold: bool,
     ingredCheck: usize,
+    ingredTC: usize,
     uibuttons: [UIButton; 7],
     soup: Soup,
     reader: reader::Reader,
@@ -51,6 +50,9 @@ struct GameState {
 impl GameState {
     pub fn new() -> Self {
         // initialize your game state
+        GameState::load_local()
+    }
+    pub fn create() -> Self {
         Self {      
             day:0,
             timestamp: time::tick(),
@@ -59,6 +61,7 @@ impl GameState {
             trackPrint: 0,
             ingredHold: false,
             ingredCheck: 0,
+            ingredTC: 0,
             uibuttons: [
                 UIButton::new("start", (200.0, 230.0, 116.0, 20.0), false),
                 UIButton::new("soup", (145.0, 148.0, 210.0, 50.0), false),
@@ -114,10 +117,7 @@ impl GameState {
             sprite!("cat", x = 181, y =65);
             sprite!("bowls_lowertrack", x = 0, y = 0);
             sprite!("bowls_uppertrack", x = 0, y = 0);
-        
-        
             //UI
-        
             sprite!("borders", x = 0, y = 0);
         }
         
@@ -183,6 +183,7 @@ impl GameState {
             select = self.tList.ingredPos1[n].0.check(select);
             select2 = self.tList.ingredPos2[n].0.check(select2);
             
+            
             //if ingredient thats being held is hovering over the soup box and the mouse was just released
             //then it will add the ingredient that was being held to the soup and set the
             //ingredient on the track to empty/nothing
@@ -214,48 +215,65 @@ impl GameState {
             //allow them to hold that specific ingredient. Makes the other ingredient in the
             //same track number not holdable to make the distinction
             if self.tList.ingredPos1[n].0.action && !self.ingredHold{
-                self.tList.ingredPos2[n].0.action = false;
+                //self.tList.ingredPos2[n].0.action = false;
                 self.ingredHold = true;
                 self.ingredCheck = n;
+                self.ingredTC = 1;
             } 
             if self.tList.ingredPos2[n].0.action && !self.ingredHold{
-                self.tList.ingredPos1[n].0.action = false;
+                //self.tList.ingredPos1[n].0.action = false;
                 self.ingredHold = true;
                 self.ingredCheck = n;
+                self.ingredTC = 2;
             }
+            
             
             //if the player is already holding an ingredient, but is hovering over/trying to hold
             //other moving ingredients that is not the ingredient thats being held
             //OR if the player is not holding an ingredient at all
             //OR if the player is holding an ingredient, but isn't interacting with an ingredient
+            //OR if the player is holding an ingredient, but is trying to grab the ingredient with the same
+            //track position on the other track
             //then sets that specific ingredient's position back to the track position while making sure
             //that ingredient cannot be held/interacted with because the player is already holding one
             
-            // BUG IN HERE LOOK AT THIS WHEN YOU CAN
 
             if self.tList.ingredPos1[n].0.action && self.ingredHold && self.ingredCheck != n
             || !self.ingredHold 
-            || !self.tList.ingredPos1[n].0.action && self.ingredHold{
+            || !self.tList.ingredPos1[n].0.action && self.ingredHold
+            || self.tList.ingredPos1[n].0.action && self.ingredHold && self.ingredCheck == n && self.ingredTC != 1{
                 self.tList.ingredPos1[n].0.action = false;
+                self.tList.ingredPos1[n].0.hold = false;
                 self.tList.ingredPos1[n].0.hitbox.0 = self.tList.trackPos1[n].0;
                 self.tList.ingredPos1[n].0.hitbox.1 = self.tList.trackPos1[n].1;
             }
             //ditto for the second track
             if self.tList.ingredPos2[n].0.action && self.ingredHold && self.ingredCheck != n
             || !self.ingredHold 
-            || !self.tList.ingredPos2[n].0.action && self.ingredHold{
+            || !self.tList.ingredPos2[n].0.action && self.ingredHold
+            || self.tList.ingredPos2[n].0.action && self.ingredHold && self.ingredCheck == n && self.ingredTC != 2{
                 self.tList.ingredPos2[n].0.action = false;
+                self.tList.ingredPos2[n].0.hold = false;
                 self.tList.ingredPos2[n].0.hitbox.0 = self.tList.trackPos2[n].0;
                 self.tList.ingredPos2[n].0.hitbox.1 = self.tList.trackPos2[n].1;
             }
 
-            
+            if self.tList.ingredPos1[n].0.hold {
+                self.tList.ingredPos1[n].0.hitbox.0 = x - (self.tList.ingredPos1[n].0.hitbox.2/2.0);
+                self.tList.ingredPos1[n].0.hitbox.1 = y - (self.tList.ingredPos1[n].0.hitbox.3/2.0);
+            }
+            if self.tList.ingredPos2[n].0.hold {
+                self.tList.ingredPos2[n].0.hitbox.0 = x - (self.tList.ingredPos2[n].0.hitbox.2/2.0);
+                self.tList.ingredPos2[n].0.hitbox.1 = y - (self.tList.ingredPos2[n].0.hitbox.3/2.0);
+            }
             //if the pointer releases the ingredient, ingredient is not active
             if m.just_released() {
                 self.ingredHold = false;
                 self.ingredCheck = 0;
                 self.tList.ingredPos1[n].0.action = false;
+                self.tList.ingredPos1[n].0.hold = false;
                 self.tList.ingredPos2[n].0.action = false;
+                self.tList.ingredPos2[n].0.hold = false;
             }
 
 
@@ -268,7 +286,7 @@ impl GameState {
             //if the track item is not at the end of the screen, draws the bowl and ingredient
             
             if !self.endScreen && !self.finalScore {
-                if !self.tList.trackPos1[n].2 {
+                if !self.tList.trackPos1[n].2  {
                     //if the track item has yet to reach the max height and is on starting side
                     if self.tList.trackPos1[n].0 <= 510.0 && !self.tList.trackPos1[n].2{
                         self.tList.trackPos1[n].0 += 1.0;
@@ -477,6 +495,7 @@ impl GameState {
                             self.totalScore = 0;
                             self.uibuttons[0].action = false;
                             self.uibuttons[0].text = "start".to_string();
+                            self.save_local();
                             break;
                         }
                         if self.day == 10 {
@@ -519,6 +538,9 @@ impl GameState {
                         if self.cusTimer != self.cusLim && self.soup.soup.len() > 0{
                             audio::play("bell");
                             audio::set_volume("bell", 0.1);
+                            if self.soup.soup.len() > self.soup.limit {
+                                self.soup.soup.remove(0);
+                            }
                             self.reader.customers[self.currCus].serveSoup(self.soup.soup.as_ref());
                             self.dayScore += self.reader.customers[self.currCus].calculateScore(self.cusTimer, self.cusLim);
                             self.cusReaction = true;
@@ -532,6 +554,7 @@ impl GameState {
                         if self.currCus != self.reader.custNum {
                             self.soup.limit = self.reader.customers[self.currCus].order.len();
                         } else {
+                            self.save_local();
                             self.endScreen = true;
                             self.cusCheck = true;
                         }
@@ -642,6 +665,26 @@ impl GameState {
 
             self.tList.ingredPos1[n].1 = Ingredient::new( "empty");
             self.tList.ingredPos2[n].1 = Ingredient::new("empty");
+        }
+    }
+
+    pub fn save_local(&self) {
+    //serialize the GameState
+    let data = borsh::to_vec(self);
+        if let Ok(d) = data {
+            let _ = local::save(&d);
+        } else {
+            log!("error saving");
+        }
+    }
+    pub fn load_local() -> GameState {
+        let data = local::load().unwrap_or_else(|_| vec![]);
+        match borsh::from_slice(&data) {
+            Ok(state) => return state,
+            Err(_) => {
+                log!("error loading game state");
+                return GameState::create();
+            }
         }
     }
 }

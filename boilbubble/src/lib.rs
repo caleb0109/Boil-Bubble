@@ -135,7 +135,7 @@ impl GameState {
 
         if !audio::is_playing("boil_and_bubble") && time::tick() % 20 == 0 {
             audio::play("boil_and_bubble");
-            audio::set_volume("boil_and_bubble", 0.1);
+            audio::set_volume("boil_and_bubble", 0.02);
         }
         
         //draw soup
@@ -193,7 +193,7 @@ impl GameState {
                 self.tList.ingredPos1[n].1.name != "empty" {
                     self.soup.addIngredients(self.tList.ingredPos1[n].1.clone());
                     audio::play("splash");
-                    audio::set_volume("splash", 0.1);
+                    audio::set_volume("splash", 0.02);
                     self.tList.ingredPos1[n].1.name = "empty".to_string();
                     self.tList.ingredPos1[n].1.setType("empty");
                     self.tList.ingredPos1[n].0.action = false;
@@ -203,7 +203,7 @@ impl GameState {
                 self.tList.ingredPos2[n].1.name != "empty" {
                     self.soup.addIngredients(self.tList.ingredPos2[n].1.clone());
                     audio::play("splash");
-                    audio::set_volume("splash", 0.1);
+                    audio::set_volume("splash", 0.02);
                     self.tList.ingredPos2[n].1.name = "empty".to_string();
                     self.tList.ingredPos2[n].1.setType("empty");
                     self.tList.ingredPos2[n].0.action = false;
@@ -381,12 +381,12 @@ impl GameState {
         if self.endScreen {
             let mut yOffset = 0;
             sprite!("scorescreen", x = 0, y = 0);
-            text!("Customer Served!", font = "TENPIXELS", x = 180, y = 90, color = 0x2d1e1eff);
+            text!("Customer Served!", font = "TENPIXELS", x = 180, y = 87, color = 0x2d1e1eff);
             if self.reader.customers.len() <= 4 {
                 for n in 0..self.reader.customers.len() {
                     let scoreText = format!("{}: {}/{} = {} pts", &self.reader.customers[n].cusName, self.reader.customers[n].score, self.reader.customers[n].order.len(), self.reader.customers[n].total);
                     yOffset += 15;
-                    text!(&scoreText, font = "TENPIXELS", x = 180, y = 105 + yOffset, color = 0x2d1e1eff);
+                    text!(&scoreText, font = "TENPIXELS", x = 180, y = 100 + yOffset, color = 0x2d1e1eff);
                 } 
             }
             if time::tick() % 120 == 0{
@@ -396,17 +396,31 @@ impl GameState {
                 for n in 4..self.reader.customers.len() {
                     let scoreText = format!("{}: {}/{} = {} pts", &self.reader.customers[n].cusName, self.reader.customers[n].score, self.reader.customers[n].order.len(), self.reader.customers[n].total);
                     yOffset += 15;
-                    text!(&scoreText, font = "TENPIXELS", x = 180, y = 105 + yOffset, color = 0x2d1e1eff);
+                    text!(&scoreText, font = "TENPIXELS", x = 180, y = 100 + yOffset, color = 0x2d1e1eff);
                 } 
             } else if !self.scoreSwitch && self.reader.customers.len() > 4{
                 for n in 0..4 {
                     let scoreText = format!("{}: {}/{} = {} pts", &self.reader.customers[n].cusName, self.reader.customers[n].score, self.reader.customers[n].order.len(), self.reader.customers[n].total);
                     yOffset += 15;
-                    text!(&scoreText, font = "TENPIXELS", x = 180, y = 105 + yOffset, color = 0x2d1e1eff);
+                    text!(&scoreText, font = "TENPIXELS", x = 180, y = 100 + yOffset, color = 0x2d1e1eff);
                 } 
             }
             
-            text!("Total Score: {}", self.dayScore; font = "TENPIXELS", x = 180, y = 180, color = 0x2d1e1eff);
+            text!("Total Score: {}", self.dayScore; font = "TENPIXELS", x = 180, y = 175, color = 0x2d1e1eff);
+            let mut calc = 0;
+            if self.totalScore >= 0 && self.totalScore <= 940 {
+                calc = 940 - self.totalScore;
+                text!("{} more to your second star!", calc; font = "TENPIXELS", x = 140, y = 195, color = 0x2d1e1eff);
+            } else if self.totalScore > 940 && self.totalScore <= 1880 {
+                calc = 1880 - self.totalScore;
+                text!("{} more to your third star!", calc; font = "TENPIXELS", x = 145, y = 195, color = 0x2d1e1eff);
+            } else if self.totalScore > 1880 && self.totalScore <= 2820 {
+                calc = 2820 - self.totalScore;
+                text!("{} more to your fourth star!", calc; font = "TENPIXELS", x = 145, y = 195, color = 0x2d1e1eff);
+            } else if self.totalScore > 2820 && self.totalScore <= 3760 {
+                calc = 3760 - self.totalScore;
+                text!("{} more to your final star!", calc; font = "TENPIXELS", x = 145, y = 195, color = 0x2d1e1eff);
+            } 
         }
 
         //final score screen (stars)
@@ -477,11 +491,7 @@ impl GameState {
 
                 match n {
                     0 => {
-                        if self.dayScore > self.dayCheck {
-                            self.totalScore += self.dayScore;
-                        } else {
-                            self.totalScore += self.dayCheck;
-                        }
+                        
                         if self.finalScore {
                             self.cameraPos.0 = 765;
                             self.reader.reset();
@@ -537,7 +547,7 @@ impl GameState {
                         
                         if self.cusTimer != self.cusLim && self.soup.soup.len() > 0{
                             audio::play("bell");
-                            audio::set_volume("bell", 0.1);
+                            audio::set_volume("bell", 0.02);
                             if self.soup.soup.len() > self.soup.limit {
                                 self.soup.soup.remove(0);
                             }
@@ -554,6 +564,11 @@ impl GameState {
                         if self.currCus != self.reader.custNum {
                             self.soup.limit = self.reader.customers[self.currCus].order.len();
                         } else {
+                            if self.dayScore > self.dayCheck {
+                                self.totalScore += self.dayScore;
+                            } else {
+                                self.totalScore += self.dayCheck;
+                            }
                             self.save_local();
                             self.endScreen = true;
                             self.cusCheck = true;

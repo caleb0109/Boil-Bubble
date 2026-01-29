@@ -47,6 +47,8 @@ struct GameState {
     cusRestart: bool,
     finalScore: bool,
     pause: bool,
+    pausedTime: usize,
+    pausedTotal: usize,
 }
 impl GameState {
     pub fn new() -> Self {
@@ -71,8 +73,8 @@ impl GameState {
                 UIButton::new("continue", (195.0, 230.0, 116.0, 20.0), false),
                 UIButton::new("serve", (26.0, 174.0, 94.0, 18.0), false),
                 UIButton::new("restart", (136.0, 230.0, 116.0, 20.0), false),
-                UIButton::new("mainmenu",(136.0, 160.0, 136.0, 160.0), false),
-                UIButton::new("pauseButton", (450.0, 10.0, 20.0, 20.0), false)
+                UIButton::new("mainmenu",(136.0, 160.0, 116.0, 20.0), false),
+                UIButton::new("pausebutton", (442.0, 4.0, 64.0, 16.0), false)
             ],
             soup: Soup::new(),
             reader: reader::Reader::new(),
@@ -96,6 +98,8 @@ impl GameState {
             cusRestart: false,
             finalScore: false,
             pause: false,
+            pausedTime: 0,
+            pausedTotal: 0,
         }
     }
     pub fn update(&mut self) {
@@ -174,11 +178,11 @@ impl GameState {
         //for every 5/6 of a second that pass, the next item on the track will appear
         //is not perfect for sure, but visually works for now
         //will look into further ways to optimize
-        if time::tick() % 64 == 0 && self.trackPrint <= 7 && self.day > 0{
+        if (time::tick() - self.pausedTotal) % 64 == 0 && self.trackPrint <= 7 && self.day > 0 && !self.pause{
             self.trackPrint += 1;
         }
 
-        if time::tick() % 60 == 0 && self.day > 0 && !self.cusCheck && self.cusTimer <= self.cusLim{
+        if (time::tick() - self.pausedTotal) % 60 == 0 && self.day > 0 && !self.cusCheck && self.cusTimer <= self.cusLim && !self.pause{
             self.cusTimer += 1;
         }
 
@@ -262,11 +266,11 @@ impl GameState {
                 self.tList.ingredPos2[n].0.hitbox.1 = self.tList.trackPos2[n].1;
             }
 
-            if self.tList.ingredPos1[n].0.hold {
+            if self.tList.ingredPos1[n].0.hold && !self.pause{
                 self.tList.ingredPos1[n].0.hitbox.0 = x - (self.tList.ingredPos1[n].0.hitbox.2/2.0);
                 self.tList.ingredPos1[n].0.hitbox.1 = y - (self.tList.ingredPos1[n].0.hitbox.3/2.0);
             }
-            if self.tList.ingredPos2[n].0.hold {
+            if self.tList.ingredPos2[n].0.hold && !self.pause{
                 self.tList.ingredPos2[n].0.hitbox.0 = x - (self.tList.ingredPos2[n].0.hitbox.2/2.0);
                 self.tList.ingredPos2[n].0.hitbox.1 = y - (self.tList.ingredPos2[n].0.hitbox.3/2.0);
             }
@@ -289,7 +293,7 @@ impl GameState {
             //if the track item reaches the end of the screen, then reset it to start
             //if the track item is not at the end of the screen, draws the bowl and ingredient
             
-            if !self.endScreen && !self.finalScore {
+            if !self.endScreen && !self.finalScore && !self.pause{
                 if !self.tList.trackPos1[n].2  {
                     //if the track item has yet to reach the max height and is on starting side
                     if self.tList.trackPos1[n].0 <= 510.0 && !self.tList.trackPos1[n].2{
@@ -333,7 +337,7 @@ impl GameState {
         //have to do it in separate loop to avoid the textbox from being printed
         //too early and being overlapped by other ingredients
         for n in 0..self.trackPrint {
-            if self.tList.ingredPos1[n].0.hover(self.tList.ingredPos1[n].0.hitbox, x, y) && self.tList.ingredPos1[n].1.name != "empty" && !self.endScreen && !self.finalScore{
+            if self.tList.ingredPos1[n].0.hover(self.tList.ingredPos1[n].0.hitbox, x, y) && self.tList.ingredPos1[n].1.name != "empty" && !self.endScreen && !self.finalScore && !self.pause {
                 //if the name of the ingredient is longer/shorter than accounted for,
                 //then either set the hover name box to a certain size to accomodate for it
                 //i couldn't really figure out a better solution sorry ;-;
@@ -355,7 +359,7 @@ impl GameState {
                     );
                 text!(&self.tList.ingredPos1[n].1.name, x = self.tList.ingredPos1[n].0.hitbox.0 + 58.0, y = self.tList.ingredPos1[n].0.hitbox.1 - 7.0, font = "TENPIXELS", color = 0x2d1e1eff);
             } 
-            if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && self.tList.ingredPos2[n].1.name != "empty" && !self.endScreen && !self.finalScore{
+            if self.tList.ingredPos2[n].0.hover(self.tList.ingredPos2[n].0.hitbox, x, y) && self.tList.ingredPos2[n].1.name != "empty" && !self.endScreen && !self.finalScore && !self.pause {
                 let mut w = self.tList.ingredPos2[n].1.name.len() as f32 * 6.0 + 26.5;
                 if self.tList.ingredPos2[n].1.name.len() >= 10 {
                     w = 103.0;
@@ -487,13 +491,13 @@ impl GameState {
                 }
             } else if !self.endScreen && n == 5 && self.tutorial <= 2{
                 self.uibuttons[n].action = false;
-            } else if self.endScreen && n != 0 && n != 6 {
+            } else if self.endScreen && n != 0 && n != 6 && n != 8 && n != 7 && n != 4{
                 self.uibuttons[n].action = false;
             } else if self.finalScore && n != 0 {
                 self.uibuttons[n].action = false;
             }
 
-            if self.pause && n != 7 && n != 8 {
+            if self.pause && n != 7 && n != 8 && n != 4{
                 self.uibuttons[n].action = false;
             } else if !self.pause && n == 7 {
                 self.uibuttons[n].action = false;
@@ -553,11 +557,18 @@ impl GameState {
                         self.uibuttons[3].action = false;
                     }
                     4 => {
-                        self.tutorial += 1;
-                        if self.tutorial >= 1 {
-                            self.uibuttons[4].hitbox.2 = 260.0;
-                            self.uibuttons[4].hitbox.3 = 160.0;
+                        if self.tutorial == 0 {
+                            self.tutorial += 1;
+                            self.uibuttons[4].hitbox.0 = 260.0;
+                            self.uibuttons[4].hitbox.1 = 160.0;
+                            self.uibuttons[4].action = false;
+                            break;
                         }
+                        let pausedHelp = self.pausedTime;
+                        self.pausedTime = ((time::tick()) - pausedHelp) + self.pausedTotal;
+                        self.pausedTotal = self.pausedTime;
+                        timer_anim.set_paused(false);
+                        self.pause = false;
                         self.uibuttons[4].action = false;
                     }
                     5 => {
@@ -604,9 +615,23 @@ impl GameState {
                     }
                     7 => {
                         *self = GameState::create();
+                        self.save_local();
+                        self.uibuttons[7].action = false;
                     }
                     8 => {
-                        self.pause = true;
+                        if self.pause {
+                            let pausedHelp = self.pausedTime;
+                            self.pausedTime = ((time::tick()) - pausedHelp) + self.pausedTotal;
+                            self.pausedTotal = self.pausedTime;
+                            timer_anim.set_paused(false);
+                            self.pause = false;
+                        } else {
+                            self.pausedTime = time::tick();
+                            self.pause = true;
+                            timer_anim.set_paused(true);
+                        }
+                        
+                        self.uibuttons[8].action = false;
                     }
                     _ => {}
                 
@@ -614,20 +639,22 @@ impl GameState {
             }
             if n == 1{
                 continue;
-            } else if n == 0 && self.tutorial == 1 || self.endScreen && n == 0{
+            } else if n == 0 && self.tutorial == 1 || self.endScreen && n == 0 && !self.pause{
                 self.uibuttons[n].draw();
-            } else if n == 3 || n == 4 && self.tutorial <= 0{
+            } else if n == 3 || n == 4 && self.tutorial <= 0 {
                 self.uibuttons[n].draw();
-            } else if n == 5 && self.tutorial >=2 && !self.endScreen && self.soup.soup.len() == 0 {
+            } else if n == 5 && self.tutorial >=2 && !self.endScreen && self.soup.soup.len() == 0 && !self.pause{
                 self.uibuttons[n].nonselect();
-            } else if n == 5 && self.tutorial >=2 && !self.endScreen{
+            } else if n == 5 && self.tutorial >=2 && !self.endScreen && !self.pause{
                 self.uibuttons[n].draw();
-            } else if n == 6 && self.endScreen && !self.finalScore{
+            } else if n == 6 && self.endScreen && !self.finalScore && !self.pause{
                 self.uibuttons[n].draw();
-            } else if n == 7 && self.pause {
+            } else if n == 7 || n == 4 {
+                if self.pause {
+                    self.uibuttons[n].draw();
+                } 
+            } else if n == 8 && self.tutorial >= 2{
                 self.uibuttons[n].draw();
-            } else if n == 8 {
-                self.uibuttons[n].tempDraw("name");
             }
             
         }
@@ -659,7 +686,7 @@ impl GameState {
         }
         
 
-        if self.day > 0 && !self.cusCheck && !self.finalScore {
+        if self.day > 0 && !self.cusCheck && !self.finalScore && !self.pause{
             //text!("Customer: {}", self.reader.customers[self.currCus].cusName; font = "TENPIXELS", x = 0, y = 270);
             //text!("Order: {:?}", self.reader.customers[self.currCus].order[0].ingredType; font = "TENPIXELS", x = 30, y = 140);
             //text!("{:?}", self.reader.customers[self.currCus].order[1].ingredType; font = "TENPIXELS", x = 30, y = 150);

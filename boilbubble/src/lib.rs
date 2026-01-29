@@ -666,7 +666,7 @@ impl GameState {
             //text!("Time Left: {}", 60 - self.timer; font = "TENPIXELS", x = 30, y = 120);
             text!("Ingredients:", x = 25, y = 98, font = "TENPIXELS", color = 0x2d1e1eff);
             text!("Day: {}", self.day; x = 10, y = 5, font = "TENPIXELS");
-            text!("Total Score: {}", self.totalScore; x = 370, y = 5, font = "TENPIXELS");
+            text!("Total Score: {}", self.totalScore; x = 85, y = 5, font = "TENPIXELS");
             //text!("Score: {}", self.dayCheck; x = 300, y = 5, font = "TENPIXELS");
             self.reader.customers[self.currCus].createOrder(self.cusTimer, self.day);
             let mut offsetdashes = 98;

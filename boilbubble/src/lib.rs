@@ -24,7 +24,7 @@ struct GameState {
     ingredHold: bool,
     ingredCheck: usize,
     ingredTC: usize,
-    uibuttons: [UIButton; 7],
+    uibuttons: [UIButton; 9],
     soup: Soup,
     reader: reader::Reader,
     currCus: usize,
@@ -45,7 +45,8 @@ struct GameState {
     redo: bool,
     cusReaction: bool,
     cusRestart: bool,
-    finalScore: bool
+    finalScore: bool,
+    pause: bool,
 }
 impl GameState {
     pub fn new() -> Self {
@@ -70,6 +71,8 @@ impl GameState {
                 UIButton::new("continue", (195.0, 230.0, 116.0, 20.0), false),
                 UIButton::new("serve", (26.0, 174.0, 94.0, 18.0), false),
                 UIButton::new("restart", (136.0, 230.0, 116.0, 20.0), false),
+                UIButton::new("mainmenu",(136.0, 160.0, 136.0, 160.0), false),
+                UIButton::new("pauseButton", (450.0, 10.0, 20.0, 20.0), false)
             ],
             soup: Soup::new(),
             reader: reader::Reader::new(),
@@ -92,6 +95,7 @@ impl GameState {
             cusReaction: false,
             cusRestart: false,
             finalScore: false,
+            pause: false,
         }
     }
     pub fn update(&mut self) {
@@ -459,6 +463,10 @@ impl GameState {
             text_box!("{}", text; x = xpos_text, y = ypos_text, w = 300, h = 33, align = "center", font = "TENPIXELS", color = 0x2d1e1eff);
         }
 
+        if self.pause {
+            sprite!("pause", x = 0, y = 0);
+        }
+
         //check to see if day continue button is pressed or not
         for n in 0..self.uibuttons.len() {
             if n == 2 {
@@ -479,9 +487,15 @@ impl GameState {
                 }
             } else if !self.endScreen && n == 5 && self.tutorial <= 2{
                 self.uibuttons[n].action = false;
-            } else if self.endScreen && n != 0 && n != 6{
+            } else if self.endScreen && n != 0 && n != 6 {
                 self.uibuttons[n].action = false;
             } else if self.finalScore && n != 0 {
+                self.uibuttons[n].action = false;
+            }
+
+            if self.pause && n != 7 && n != 8 {
+                self.uibuttons[n].action = false;
+            } else if !self.pause && n == 7 {
                 self.uibuttons[n].action = false;
             }
                     //if pressed, goes to next day, resets all track positions, empties soup, and sets soup limit
@@ -491,7 +505,6 @@ impl GameState {
 
                 match n {
                     0 => {
-                        
                         if self.finalScore {
                             self.cameraPos.0 = 765;
                             self.reader.reset();
@@ -541,6 +554,10 @@ impl GameState {
                     }
                     4 => {
                         self.tutorial += 1;
+                        if self.tutorial >= 1 {
+                            self.uibuttons[4].hitbox.2 = 260.0;
+                            self.uibuttons[4].hitbox.3 = 160.0;
+                        }
                         self.uibuttons[4].action = false;
                     }
                     5 => {
@@ -564,11 +581,11 @@ impl GameState {
                         if self.currCus != self.reader.custNum {
                             self.soup.limit = self.reader.customers[self.currCus].order.len();
                         } else {
-                            if self.dayScore > self.dayCheck {
-                                self.totalScore += self.dayScore;
-                            } else {
-                                self.totalScore += self.dayCheck;
-                            }
+                                if self.dayScore > self.dayCheck {
+                                    self.totalScore += self.dayScore;
+                                } else {
+                                    self.totalScore += self.dayCheck;
+                                }
                             self.save_local();
                             self.endScreen = true;
                             self.cusCheck = true;
@@ -576,6 +593,7 @@ impl GameState {
                         self.uibuttons[5].action = false;
                     }
                     6 => {
+                        self.totalScore -= self.dayScore;
                         self.dayCheck = self.dayScore;
                         self.reset();
                         self.redo = true;
@@ -583,6 +601,12 @@ impl GameState {
                         self.reader.customersDay(self.day);
                         self.uibuttons[6].action = false;
                         timer_anim.restart();
+                    }
+                    7 => {
+                        *self = GameState::create();
+                    }
+                    8 => {
+                        self.pause = true;
                     }
                     _ => {}
                 
@@ -600,6 +624,10 @@ impl GameState {
                 self.uibuttons[n].draw();
             } else if n == 6 && self.endScreen && !self.finalScore{
                 self.uibuttons[n].draw();
+            } else if n == 7 && self.pause {
+                self.uibuttons[n].draw();
+            } else if n == 8 {
+                self.uibuttons[n].tempDraw("name");
             }
             
         }
